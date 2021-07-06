@@ -33,24 +33,51 @@ bool LogMenu(nanodbc::connection conn) {
 	std::cout << "UserName: ";
 	std::cin >> UserName;
 	std::cout << "Password: ";
-	std::cin >> Password;
+	HidePassword(Password);
+
 	if (CheckUserInputForPassword(Password, conn) && CheckUserInputForUserName(UserName, conn))
 	{
 
-		std::cout << "\nLogin successfully :)\n";
+		std::cout << "\n\nLogin successfully :)\n";
 		std::cout << "Welcome back: " << UserName << "\n";
 		return true;
 	}
 	if (CheckUserInputForUserName(UserName, conn) == 0)
 	{
-		std::cout << "\n-> Proble with UserName!\n";
+		std::cout << "\n\n-> Proble with UserName!\n";
 	}
 	if (CheckUserInputForPassword(Password, conn) == 0)
 	{
-		std::cout << "-> Proble with Password!\n\n";
+		std::cout << "\n-> Proble with Password!\n";
+		std::cout << "[Password you enter: " << Password << "]\n\n";
 	}
 	std::cout << "Try Againg\n";
 	system("pause");
 
 	LogMenu(conn);
+}
+
+
+void HidePassword(std::string& Password) {
+	char cr = 0;
+	do
+	{
+		cr = _getch();
+		switch (cr)
+		{
+		case 8: //backspace
+			if (Password.size() != 0) {
+				Password.pop_back();
+				std::cout << char(8) << ' ' << char(8);
+			}
+			break;
+		case 27: //escape
+		case '\r': //\r
+			break;
+		default: //asfasfasdf 123123 
+			Password.push_back(cr);
+			std::cout << '*';
+			break;
+		}
+	} while (cr != '\r');
 }
