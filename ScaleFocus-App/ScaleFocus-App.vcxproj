@@ -142,11 +142,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Login.cpp" />
     <ClCompile Include="ScaleFocus-App.cpp" />
     <ClCompile Include="ClassUser.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClassUser.h" />
+    <ClInclude Include="Login.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -2,13 +2,17 @@
 #include <iostream>
 #include <exception>
 #include <string>
+
 #include "ClassUser.h"
+#include"Login.h"
 
 int main() try
 {
 	//Connecting ssms to visual studio
 	auto const connstr = NANODBC_TEXT("Driver={ODBC Driver 17 for SQL Server};Server=(localdb)\\MSSQLLocalDB;Database=ScaleFocus-AppDB;Trusted_Connection=yes;");
 	nanodbc::connection conn(connstr);
+	LogMenu(conn);
+
 	/*
 	auto result = nanodbc::execute(conn, NANODBC_TEXT("SELECT UserName, Password FROM Users"));
 	std::string userinput;
@@ -28,6 +32,8 @@ int main() try
 			std::cout << "(:";
 	}
 	*/
+
+	/*
 	User user;
 	
 	nanodbc::statement stmt(conn);
@@ -59,7 +65,7 @@ int main() try
 	{
 		std::cout << "ID: " << result.get<int>("sid", -1) << std::endl;
 	}
-	
+	*/
 	//nanodbc::execute(conn, NANODBC_TEXT(std::string("insert into User (Id, UserName, Password, Role, IdOfCreator, IdOfUserLastChange) VALUES ('"+Id+"', '"+Password+"', '"+Role+"', '"+IdOfCreator+"', '"+IdOfUserLastChange+")")));
 	return EXIT_SUCCESS;
 }
@@ -68,6 +74,10 @@ catch (std::exception& e)
 	std::cerr << e.what() << std::endl;
 	return EXIT_FAILURE;
 }
+
+
+
+
 /*
 int main() try
 {
