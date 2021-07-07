@@ -9,10 +9,10 @@
 
 
 
-bool CheckUserInputForUserName(std::string UserName, nanodbc::connection conn);
+bool CheckUserInputForUserName(std::string UserName, nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser);
 
 bool CheckUserInputForPassword(std::string Password, nanodbc::connection conn);
 
-bool LogMenu(nanodbc::connection conn);
+bool LogMenu(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser);
 
 void HidePassword(std::string& Password);

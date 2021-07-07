@@ -1,13 +1,17 @@
 #include "Login.h"
 
 
-bool CheckUserInputForUserName(std::string UserName, nanodbc::connection conn) {
-	auto result = nanodbc::execute(conn, NANODBC_TEXT("SELECT UserName FROM Users"));
+bool CheckUserInputForUserName(std::string UserName, nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser) {
+	auto result = nanodbc::execute(conn, NANODBC_TEXT("SELECT Id, Role ,UserName FROM Users"));
 	while (result.next())
 	{
-		auto dbUserName = result.get<nanodbc::string>(0);
+		auto dbIdUser = result.get<int>(0);
+		auto dbRoleUser = result.get<int>(1);
+		auto dbUserName = result.get<nanodbc::string>(2);
 		if (UserName == dbUserName)
 		{
+			idOfLoginUser = dbIdUser;
+			RoleOfLoginUser = dbRoleUser;
 			return true;
 		}
 	}
@@ -27,7 +31,7 @@ bool CheckUserInputForPassword(std::string encryptedPassword, nanodbc::connectio
 	return false;
 }
 
-bool LogMenu(nanodbc::connection conn) {
+bool LogMenu(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser) {
 	std::string UserName;
 	std::string Password;
 	system("CLS");
@@ -37,26 +41,25 @@ bool LogMenu(nanodbc::connection conn) {
 	HidePassword(Password);
 	std::string encryptedPassword = sha256(Password);
 
-	if (CheckUserInputForPassword(encryptedPassword, conn) && CheckUserInputForUserName(UserName, conn))
+	if (CheckUserInputForPassword(encryptedPassword, conn) && CheckUserInputForUserName(UserName, conn, idOfLoginUser, RoleOfLoginUser))
 	{
 
 		std::cout << "\n\nLogin successfully :)\n";
 		std::cout << "Welcome back: " << UserName << "\n";
 		return true;
 	}
-	if (CheckUserInputForUserName(UserName, conn) == 0)
+	if (CheckUserInputForUserName(UserName, conn, idOfLoginUser, RoleOfLoginUser) == 0)
 	{
 		std::cout << "\n\n-> Problem with UserName!\n";
 	}
 	if (CheckUserInputForPassword(encryptedPassword, conn) == 0)
 	{
 		std::cout << "\n\n-> Problem with Password!\n";
-		std::cout << "[Password you enter: '" << Password << "']\n\n";
 	}
-	std::cout << "Try Again :)\n";
+	std::cout << "\nTry Again :)\n";
 	system("pause");
 
-	LogMenu(conn);
+	LogMenu(conn, idOfLoginUser, RoleOfLoginUser);
 }
 
 

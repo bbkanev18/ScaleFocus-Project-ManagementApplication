@@ -12,7 +12,25 @@ int main() try
 	//Connecting ssms to visual studio
 	auto const connstr = NANODBC_TEXT("Driver={ODBC Driver 17 for SQL Server};Server=(localdb)\\MSSQLLocalDB;Database=ScaleFocus-AppDB;Trusted_Connection=yes;");
 	nanodbc::connection conn(connstr);
-	LogMenu(conn);
+
+	int idOfLoginUser;
+	bool RoleOfLoginUser;
+	LogMenu(conn, idOfLoginUser, RoleOfLoginUser);
+
+	std::cout << idOfLoginUser << " ";
+	std::cout << RoleOfLoginUser;
+	//std::string username = "Gosho";
+
+	//nanodbc::statement check(conn);
+	//nanodbc::prepare(check, R"(
+	//	SELECT Id FROM Users
+	//	WHERE UserName = )");
+	////check.bind(0, &username);
+
+	/*auto result = nanodbc::execute(check);
+	while (result.next())
+	{
+	}*/
 
 	/*
 	auto result = nanodbc::execute(conn, NANODBC_TEXT("SELECT UserName, Password FROM Users"));
