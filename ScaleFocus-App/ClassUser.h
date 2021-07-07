@@ -2,6 +2,7 @@
 #include<string>
 #include <iostream>
 #include <string>
+#include<nanodbc.h>
 
 #include "sha256.h"
 
@@ -28,3 +29,4 @@ private:
 	int m_IdOfUserLastChange;
 };
 
+void CreatingFirstUser(nanodbc::connection conn);

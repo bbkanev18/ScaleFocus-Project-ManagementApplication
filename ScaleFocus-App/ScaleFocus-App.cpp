@@ -7,18 +7,26 @@
 #include"Login.h"
 #include "sha256.h"
 
+
+
 int main() try
 {
 	//Connecting ssms to visual studio
 	auto const connstr = NANODBC_TEXT("Driver={ODBC Driver 17 for SQL Server};Server=(localdb)\\MSSQLLocalDB;Database=ScaleFocus-AppDB;Trusted_Connection=yes;");
 	nanodbc::connection conn(connstr);
+	
+	auto result = nanodbc::execute(conn, NANODBC_TEXT("SELECT Id FROM Users"));
 
-	int idOfLoginUser;
+	if (result.next()){}
+	else
+	{
+		CreatingFirstUser(conn);
+	}
+
+	int IdOfLoginUser;
 	bool RoleOfLoginUser;
-	LogMenu(conn, idOfLoginUser, RoleOfLoginUser);
+	LogMenu(conn, IdOfLoginUser, RoleOfLoginUser);
 
-	std::cout << idOfLoginUser << " ";
-	std::cout << RoleOfLoginUser;
 	//std::string username = "Gosho";
 
 	//nanodbc::statement check(conn);

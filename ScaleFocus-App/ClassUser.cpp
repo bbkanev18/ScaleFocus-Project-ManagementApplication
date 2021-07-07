@@ -1,13 +1,9 @@
 #include "ClassUser.h"
 
 User::User() {
-	m_id = 0;
 	m_UserName = "admin";
 	m_Password = "adminpass";
 	m_role = 1;
-	m_IdOfCreator = 0;
-	m_IdOfUserLastChange = 0;
-
 }
 
 int& User::getId() { return m_id; }
@@ -26,3 +22,26 @@ int& User::getIdOfCreator() { return m_IdOfCreator; }
 
 int& User::getIdOfUserLastChange() { return m_IdOfUserLastChange; }
 
+void CreatingFirstUser(nanodbc::connection conn)
+{
+	User admin;
+
+	nanodbc::statement CreatingAdmin(conn);
+
+	nanodbc::prepare(CreatingAdmin, R"(
+		INSERT INTO Users (UserName, Password, Role) 
+		VALUES
+		(?, ?, ?) ;
+	)");
+
+	int role = admin.getRole();
+	std::string encrypterdPassword = sha256(admin.getPassword());
+
+	CreatingAdmin.bind(0, admin.getUserName().c_str());
+	CreatingAdmin.bind(1, encrypterdPassword.c_str());
+	CreatingAdmin.bind(2, &role);
+
+	auto result = nanodbc::execute(CreatingAdmin);
+	std::cout << result.affected_rows() << "\n";
+	system("pause");
+}
