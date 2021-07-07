@@ -5,6 +5,8 @@
 #include <conio.h>
 #include <nanodbc.h>
 
+#include "sha256.h"
+
 
 
 bool CheckUserInputForUserName(std::string UserName, nanodbc::connection conn);

@@ -5,6 +5,7 @@
 
 #include "ClassUser.h"
 #include"Login.h"
+#include "sha256.h"
 
 int main() try
 {
@@ -48,11 +49,12 @@ int main() try
 	const int a_null = 0;
 	const char* b_null = "";
 	int role = user.getRole();
+	std::string encrypterdPassword = sha256(user.getPassword());
 
 	//stmt.bind(0, &user.getId());
 	
 	stmt.bind(0, user.getUserName().c_str());
-	stmt.bind(1, user.getPassword().c_str());
+	stmt.bind(1, encrypterdPassword.c_str());
 	stmt.bind(2, &role);
 	//stmt.bind(3, &user.getIdOfCreator(), 1, &a_null);
 	//stmt.bind(4, &user.getIdOfUserLastChange(), 1, &a_null);

@@ -1,5 +1,6 @@
 #include "Login.h"
 
+
 bool CheckUserInputForUserName(std::string UserName, nanodbc::connection conn) {
 	auto result = nanodbc::execute(conn, NANODBC_TEXT("SELECT UserName FROM Users"));
 	while (result.next())
@@ -13,12 +14,12 @@ bool CheckUserInputForUserName(std::string UserName, nanodbc::connection conn) {
 	return false;
 }
 
-bool CheckUserInputForPassword(std::string Password, nanodbc::connection conn) {
+bool CheckUserInputForPassword(std::string encryptedPassword, nanodbc::connection conn) {
 	auto result = nanodbc::execute(conn, NANODBC_TEXT("SELECT Password FROM Users"));
 	while (result.next())
 	{
 		auto dbPassword = result.get<nanodbc::string>(0);
-		if (Password == dbPassword)
+		if (encryptedPassword == dbPassword)
 		{
 			return true;
 		}
@@ -30,12 +31,13 @@ bool LogMenu(nanodbc::connection conn) {
 	std::string UserName;
 	std::string Password;
 	system("CLS");
-	std::cout << "UserName: ";
+	std::cout << "Username: ";
 	std::cin >> UserName;
 	std::cout << "Password: ";
 	HidePassword(Password);
+	std::string encryptedPassword = sha256(Password);
 
-	if (CheckUserInputForPassword(Password, conn) && CheckUserInputForUserName(UserName, conn))
+	if (CheckUserInputForPassword(encryptedPassword, conn) && CheckUserInputForUserName(UserName, conn))
 	{
 
 		std::cout << "\n\nLogin successfully :)\n";
@@ -44,14 +46,14 @@ bool LogMenu(nanodbc::connection conn) {
 	}
 	if (CheckUserInputForUserName(UserName, conn) == 0)
 	{
-		std::cout << "\n\n-> Proble with UserName!\n";
+		std::cout << "\n\n-> Problem with UserName!\n";
 	}
-	if (CheckUserInputForPassword(Password, conn) == 0)
+	if (CheckUserInputForPassword(encryptedPassword, conn) == 0)
 	{
-		std::cout << "\n-> Proble with Password!\n";
-		std::cout << "[Password you enter: " << Password << "]\n\n";
+		std::cout << "\n\n-> Problem with Password!\n";
+		std::cout << "[Password you enter: '" << Password << "']\n\n";
 	}
-	std::cout << "Try Againg\n";
+	std::cout << "Try Again :)\n";
 	system("pause");
 
 	LogMenu(conn);

@@ -1,6 +1,9 @@
 #pragma once
 #include<string>
 #include <iostream>
+#include <string>
+
+#include "sha256.h"
 
 class User
 {
