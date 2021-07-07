@@ -41,7 +41,4 @@ void CreatingFirstUser(nanodbc::connection conn)
 	CreatingAdmin.bind(1, encrypterdPassword.c_str());
 	CreatingAdmin.bind(2, &role);
 
-	auto result = nanodbc::execute(CreatingAdmin);
-	std::cout << result.affected_rows() << "\n";
-	system("pause");
 }
