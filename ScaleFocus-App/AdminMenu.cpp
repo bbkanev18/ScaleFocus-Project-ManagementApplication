@@ -32,6 +32,9 @@ void subAdminUserMenu(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOf
 		case '1':
 			subMenuListUser(conn, idOfLoginUser, RoleOfLoginUser);
 			break;
+		case '2':
+			createUser(conn, idOfLoginUser);
+			break;
 		case 27:
 			isTrue = false;
 			adminMenu(conn, idOfLoginUser, RoleOfLoginUser);
@@ -40,6 +43,49 @@ void subAdminUserMenu(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOf
 			break;
 		}
 	}
+}
+
+void createUser(nanodbc::connection conn, int& idOfLoginUser) {
+	std::string UserName;
+	std::string Password;
+	std::string FirstName;
+	std::string LastName;
+	bool role;
+	system("cls");
+	std::cout << "Choose username: ";
+	std::cin >> UserName;
+	std::cout << "Choose password: ";
+	std::cin >> Password;
+	std::string encrypterdPassword = sha256(Password);
+	std::cout << "Choose firstname: ";
+	std::cin >> FirstName;
+	std::cout << "Choose lastname: ";
+	std::cin >> LastName;
+	std::cout << "Role (1 - administrator, 0 - user): ";
+	std::cin >> role;
+	int getRole = role;
+
+	nanodbc::statement creatingNewUser(conn);
+
+	nanodbc::prepare(creatingNewUser, R"(
+		INSERT INTO Users (
+		UserName, Password, FirstName, LastName, Role
+		,IdOfCreator, IdOfUserLastChange) 
+		VALUES
+		(?, ?, ?, ?, ?, ?, ?) ;
+	)");
+
+	creatingNewUser.bind(0, UserName.c_str());
+	creatingNewUser.bind(1, encrypterdPassword.c_str());
+	creatingNewUser.bind(2, FirstName.c_str());
+	creatingNewUser.bind(3, LastName.c_str());
+	creatingNewUser.bind(4, &getRole);
+	creatingNewUser.bind(5, &idOfLoginUser);
+	creatingNewUser.bind(6, &idOfLoginUser);
+
+	nanodbc::execute(creatingNewUser);
+	std::cout << "\nCreate successfully :)\n\n";
+	system("pause");
 }
 
 void subMenuListUser(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser) {

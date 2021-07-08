@@ -30,9 +30,9 @@ void CreatingFirstUser(nanodbc::connection conn)
 
 	try {
 
-		nanodbc::statement CreatingAdmin(conn);
+		nanodbc::statement creatingDefaltAdmin(conn);
 
-		nanodbc::prepare(CreatingAdmin, R"(
+		nanodbc::prepare(creatingDefaltAdmin, R"(
 		INSERT INTO Users (UserName, Password, Role) 
 		VALUES
 		(?, ?, ?) ;
@@ -41,11 +41,11 @@ void CreatingFirstUser(nanodbc::connection conn)
 		int role = admin.getRole();
 		std::string encrypterdPassword = sha256(admin.getPassword());
 
-		CreatingAdmin.bind(0, admin.getUserName().c_str());
-		CreatingAdmin.bind(1, encrypterdPassword.c_str());
-		CreatingAdmin.bind(2, &role);
+		creatingDefaltAdmin.bind(0, admin.getUserName().c_str());
+		creatingDefaltAdmin.bind(1, encrypterdPassword.c_str());
+		creatingDefaltAdmin.bind(2, &role);
 
-		nanodbc::execute(CreatingAdmin);
+		nanodbc::execute(creatingDefaltAdmin);
 	}
 	catch (std::exception& e)
 	{
