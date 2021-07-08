@@ -19,4 +19,10 @@ void getUserListById(nanodbc::connection conn, int failToEnterId, int& idOfLogin
 
 void printUser(nanodbc::connection conn, nanodbc::result& result);
 
-void createUser(nanodbc::connection conn, int& idOfLoginUser);
+void createUser(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser);
+
+void subEditMenu(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser);
+
+void editUserName(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser);
+
+int getUserByIdForEdit(nanodbc::connection conn, int failToEnterId, int& idOfLoginUser, bool& RoleOfLoginUser);
