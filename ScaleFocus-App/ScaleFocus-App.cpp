@@ -5,20 +5,54 @@
 
 #include "ClassUser.h"
 #include"Login.h"
+#include "AdminMenu.h"
 #include "sha256.h"
+
+
+//template <typename T>
+//T readNumber()
+//{
+//	T item;
+//
+//	do
+//	{
+//		if (std::cin >> item)
+//		{
+//			return item;
+//		}
+//		else
+//		{
+//			std::cout << "Invalid input!" << std::endl;
+//			std::cin.clear();
+//			std::cin.ignore(INT_MAX, '\n');
+//		};
+//	} while (true);
+//
+//	return 0;
+//}
 
 int main() try
 {
+	//std::cout << readNumber<float>();
+
+
 	//Connecting ssms to visual studio
-	auto const connstr = NANODBC_TEXT("Driver={ODBC Driver 17 for SQL Server};Server=(localdb)\\MSSQLLocalDB;Database=ScaleFocus-AppDB;Trusted_Connection=yes;");
+	auto const connstr = NANODBC_TEXT("Driver={ODBC Driver 17 for SQL Server};Server=(localdb)\\MSSQLLocalDB;Database=ScaleFocus-AppDB;Trusted_Connection=yes;MARS_Connection=Yes;");
 	nanodbc::connection conn(connstr);
+	
+	auto result = nanodbc::execute(conn, NANODBC_TEXT("SELECT Id FROM Users"));
 
-	int idOfLoginUser;
+	if (result.next()){}
+	else
+	{
+		CreatingFirstUser(conn);
+	}
+
+	int IdOfLoginUser;
 	bool RoleOfLoginUser;
-	LogMenu(conn, idOfLoginUser, RoleOfLoginUser);
+	LogMenu(conn, IdOfLoginUser, RoleOfLoginUser);
 
-	std::cout << idOfLoginUser << " ";
-	std::cout << RoleOfLoginUser;
+	
 	//std::string username = "Gosho";
 
 	//nanodbc::statement check(conn);
