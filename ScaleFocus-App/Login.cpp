@@ -31,7 +31,7 @@ bool CheckUserInputForPassword(std::string encryptedPassword, nanodbc::connectio
 	return false;
 }
 
-bool LogMenu(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser) {
+void LogMenu(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser) {
 	std::string UserName;
 	std::string Password;
 	system("CLS");
@@ -46,7 +46,10 @@ bool LogMenu(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser
 		std::cout << "\n\nLogin successfully :)\n";
 		std::cout << "Welcome back: " << UserName << "\n";
 		system("pause");
-		return true;
+
+		if (RoleOfLoginUser)
+			adminMenu(conn, idOfLoginUser, RoleOfLoginUser);
+		return ;
 	}
 	if (CheckUserInputForUserName(UserName, conn, idOfLoginUser, RoleOfLoginUser) == 0)
 	{

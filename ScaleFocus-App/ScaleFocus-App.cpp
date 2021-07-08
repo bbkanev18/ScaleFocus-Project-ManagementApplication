@@ -52,10 +52,6 @@ int main() try
 	bool RoleOfLoginUser;
 	LogMenu(conn, IdOfLoginUser, RoleOfLoginUser);
 
-	if (RoleOfLoginUser) {
-		adminMenu(conn);
-	}
-
 	
 	//std::string username = "Gosho";
 

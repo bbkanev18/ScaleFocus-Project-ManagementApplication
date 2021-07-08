@@ -1,18 +1,19 @@
 #include "AdminMenu.h"
 
-void adminMenu(nanodbc::connection conn) {
+void adminMenu(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser) {
 	bool isTrue = true;
 	while (isTrue)
 	{
 		system("cls");
-		std::cout << "--Admin Menu--\n1. List users\n2. Create new user\n3. Edit user\n4. Delete user\nEsc. To exit program\n";
+		std::cout << "--Admin Menu--\n1. Users Management\n2. Teams Management\n3. Projects Management\nEsc. To logout\n";
 		switch (_getch())
 		{
 		case '1':
-			subMenuListUser(conn);
+			subAdminUserMenu(conn, idOfLoginUser, RoleOfLoginUser);
 			break;
 		case 27:
 			isTrue = false;
+			LogMenu(conn, idOfLoginUser, RoleOfLoginUser);
 			break;
 		default:
 			break;
@@ -20,22 +21,45 @@ void adminMenu(nanodbc::connection conn) {
 	}
 }
 
-void subMenuListUser(nanodbc::connection conn) {
+void subAdminUserMenu(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser) {
 	bool isTrue = true;
 	while (isTrue)
 	{
 		system("cls");
-		std::cout << "1. List all user\n2. List by Id\nEsc. To back in main menu\n";
+		std::cout << "--User Menu--\n1. List users\n2. Create new user\n3. Edit user\n4. Delete user\nEsc. To back in main menu\n";
+		switch (_getch())
+		{
+		case '1':
+			subMenuListUser(conn, idOfLoginUser, RoleOfLoginUser);
+			break;
+		case 27:
+			isTrue = false;
+			adminMenu(conn, idOfLoginUser, RoleOfLoginUser);
+			break;
+		default:
+			break;
+		}
+	}
+}
+
+void subMenuListUser(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser) {
+	bool isTrue = true;
+	while (isTrue)
+	{
+		int failToEnterId = 5;
+		system("cls");
+		std::cout << "1. List all user\n2. List by Id\nEsc. To back in user menu\n";
 		switch (_getch())
 		{
 		case '1':
 			getListOfAllUsers(conn);
 			break;
 		case '2':
-			getUserListById(conn);
+			getUserListById(conn, failToEnterId, idOfLoginUser, RoleOfLoginUser);
 			break;
 		case 27:
 			isTrue = false;
+			subAdminUserMenu(conn, idOfLoginUser, RoleOfLoginUser);
 			break;
 		default:
 			break;
@@ -53,8 +77,9 @@ void getListOfAllUsers(nanodbc::connection conn) {
 	system("pause");
 }
 
-void getUserListById(nanodbc::connection conn) 
+void getUserListById(nanodbc::connection conn, int failToEnterId, int& idOfLoginUser, bool& RoleOfLoginUser)
 {
+	
 	nanodbc::statement findUser(conn);
 
 	nanodbc::prepare(findUser, R"(
@@ -67,12 +92,18 @@ void getUserListById(nanodbc::connection conn)
 
 	int id;
 	system("cls");
+	std::cout << "--If you enter " << failToEnterId << " times wrong you go back to list menu--\n";
 	std::cout << "Enter User Id: ";
 	std::cin >> id;
+	failToEnterId--;
 	if (std::cin.fail())
 	{
 		std::cin.clear();
 		std::cin.ignore(INT_MAX, '\n');
+	}
+	if (failToEnterId == 0)
+	{
+		subMenuListUser(conn, idOfLoginUser, RoleOfLoginUser);
 	}
 	
 
@@ -84,7 +115,7 @@ void getUserListById(nanodbc::connection conn)
 		printUser(conn, result);
 	}
 	else {
-		getUserListById(conn);
+		getUserListById(conn, failToEnterId, idOfLoginUser, RoleOfLoginUser);
 	}
 	std::cout << "\n";
 	system("pause");
@@ -124,4 +155,5 @@ void printUser(nanodbc::connection conn, nanodbc::result& result)
 		std::cout << "null\n";
 	else
 		std::cout << IdOfUserLastChange << "\n";
+	std::cout << "======================================\n";
 }
