@@ -43,9 +43,9 @@ bool LogMenu(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser
 
 	if (CheckUserInputForPassword(encryptedPassword, conn) && CheckUserInputForUserName(UserName, conn, idOfLoginUser, RoleOfLoginUser))
 	{
-
 		std::cout << "\n\nLogin successfully :)\n";
 		std::cout << "Welcome back: " << UserName << "\n";
+		system("pause");
 		return true;
 	}
 	if (CheckUserInputForUserName(UserName, conn, idOfLoginUser, RoleOfLoginUser) == 0)

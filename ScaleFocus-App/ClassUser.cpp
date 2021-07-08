@@ -1,4 +1,6 @@
 #include "ClassUser.h"
+#include <iostream>
+#include <exception>
 
 User::User() {
 	m_UserName = "admin";
@@ -26,19 +28,28 @@ void CreatingFirstUser(nanodbc::connection conn)
 {
 	User admin;
 
-	nanodbc::statement CreatingAdmin(conn);
+	try {
 
-	nanodbc::prepare(CreatingAdmin, R"(
+		nanodbc::statement CreatingAdmin(conn);
+
+		nanodbc::prepare(CreatingAdmin, R"(
 		INSERT INTO Users (UserName, Password, Role) 
 		VALUES
 		(?, ?, ?) ;
 	)");
 
-	int role = admin.getRole();
-	std::string encrypterdPassword = sha256(admin.getPassword());
+		int role = admin.getRole();
+		std::string encrypterdPassword = sha256(admin.getPassword());
 
-	CreatingAdmin.bind(0, admin.getUserName().c_str());
-	CreatingAdmin.bind(1, encrypterdPassword.c_str());
-	CreatingAdmin.bind(2, &role);
+		CreatingAdmin.bind(0, admin.getUserName().c_str());
+		CreatingAdmin.bind(1, encrypterdPassword.c_str());
+		CreatingAdmin.bind(2, &role);
 
+		nanodbc::execute(CreatingAdmin);
+	}
+	catch (std::exception& e)
+	{
+		std::cerr << e.what() << std::endl;
+		return;
+	}
 }

@@ -142,12 +142,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AdminMenu.cpp" />
     <ClCompile Include="Login.cpp" />
     <ClCompile Include="ScaleFocus-App.cpp" />
     <ClCompile Include="ClassUser.cpp" />
     <ClCompile Include="sha256.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AdminMenu.h" />
     <ClInclude Include="ClassUser.h" />
     <ClInclude Include="sha256.h" />
     <ClInclude Include="Login.h" />
