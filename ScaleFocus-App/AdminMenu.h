@@ -15,7 +15,7 @@ void subMenuListUser(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfL
 
 void getListOfAllUsers(nanodbc::connection conn);
 
-void printUser(nanodbc::connection conn, nanodbc::result& result);
+int printUser(nanodbc::connection conn, nanodbc::result& result);
 
 void createUser(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser);
 

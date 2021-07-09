@@ -6,6 +6,7 @@ User::User() {
 	m_UserName = "admin";
 	m_Password = "adminpass";
 	m_role = 1;
+	m_IsDeleted = 0;
 }
 
 int& User::getId() { return m_id; }
@@ -33,17 +34,19 @@ void CreatingFirstUser(nanodbc::connection conn)
 		nanodbc::statement creatingDefaltAdmin(conn);
 
 		nanodbc::prepare(creatingDefaltAdmin, R"(
-		INSERT INTO Users (UserName, Password, Role) 
+		INSERT INTO Users (UserName, Password, Role, IsDeleted) 
 		VALUES
-		(?, ?, ?) ;
+		(?, ?, ?, ?) ;
 	)");
 
 		int role = admin.getRole();
+		int IsDelete = admin.getIsDeleted();
 		std::string encrypterdPassword = sha256(admin.getPassword());
 
 		creatingDefaltAdmin.bind(0, admin.getUserName().c_str());
 		creatingDefaltAdmin.bind(1, encrypterdPassword.c_str());
 		creatingDefaltAdmin.bind(2, &role);
+		creatingDefaltAdmin.bind(3, &IsDelete);
 
 		nanodbc::execute(creatingDefaltAdmin);
 	}
@@ -53,3 +56,6 @@ void CreatingFirstUser(nanodbc::connection conn)
 		return;
 	}
 }
+
+
+int& User::getIsDeleted() { return m_IsDeleted; }

@@ -48,6 +48,9 @@ int main() try
 		CreatingFirstUser(conn);
 	}
 
+
+
+
 	int IdOfLoginUser;
 	bool RoleOfLoginUser;
 	LogMenu(conn, IdOfLoginUser, RoleOfLoginUser);

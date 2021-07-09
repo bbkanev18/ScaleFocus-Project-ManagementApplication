@@ -18,6 +18,7 @@ public:
 	bool& getRole(); //1 - for admin, 0 for user
 	int& getIdOfCreator();
 	int& getIdOfUserLastChange();
+	int& getIsDeleted();
 private:
 	int m_id;
 	std::string m_UserName;
@@ -27,6 +28,7 @@ private:
 	bool m_role;
 	int m_IdOfCreator;
 	int m_IdOfUserLastChange;
+	int m_IsDeleted;
 };
 
 void CreatingFirstUser(nanodbc::connection conn);

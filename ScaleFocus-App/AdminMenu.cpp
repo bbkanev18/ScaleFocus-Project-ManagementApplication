@@ -37,6 +37,8 @@ void subAdminUserMenu(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOf
 		case '3':
 			subEditMenu(conn, idOfLoginUser, RoleOfLoginUser);
 			break;
+		case '4':
+			subDeleteMenu(conn, idOfLoginUser, RoleOfLoginUser);
 		case 27:
 			isTrue = false;
 			adminMenu(conn, idOfLoginUser, RoleOfLoginUser);
@@ -81,7 +83,6 @@ void subMenuListUser(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfL
 	bool isTrue = true;
 	while (isTrue)
 	{
-		int failToEnterId = 5;
 		system("cls");
 		std::cout << "---Print Menu---\n1. List all user\n2. List by Id\nEsc. To back in user menu\n";
 		switch (_getch())
@@ -90,11 +91,22 @@ void subMenuListUser(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfL
 			getListOfAllUsers(conn);
 			break;
 		case '2':
-
+		{
 			std::cout << "\nChoose user id to print: ";
-			getUserById(conn, idOfLoginUser, RoleOfLoginUser);
+			int id = getUserById(conn, idOfLoginUser, RoleOfLoginUser);
+			if (id == -1) {
+				std::cout << "\n ERROR: Not found id!\n";
+				system("pause");
+				break;
+			}
+			else if (id == -2)
+			{
+				system("pause");
+				break;
+			}
 			system("pause");
 			break;
+		}
 		case 27:
 			isTrue = false;
 			subAdminUserMenu(conn, idOfLoginUser, RoleOfLoginUser);
@@ -115,7 +127,13 @@ void editUserName(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLogi
 	std::cout << "\nChoose user by id to editing name: ";
 	int id = getUserById(conn, idOfLoginUser, RoleOfLoginUser);
 	if (id == -1){
+		std::cout << "\n ERROR: Not found id!\n";
 		system("pause"); 
+		return;
+	}
+	else if (id == -2)
+	{
+		system("pause");
 		return;
 	}
 	std::cout << "\nIs that correct user you want to edit(y/n)";
@@ -170,6 +188,12 @@ void editPassword(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLogi
 	std::cout << "\nChoose user by id to editing name: ";
 	int id = getUserById(conn, idOfLoginUser, RoleOfLoginUser);
 	if (id == -1) {
+		std::cout << "\n ERROR: Not found id!\n";
+		system("pause");
+		return;
+	}
+	else if (id == -2)
+	{
 		system("pause");
 		return;
 	}
@@ -225,6 +249,12 @@ void editFirstName(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLog
 	std::cout << "\nChoose user by id to editing name: ";
 	int id = getUserById(conn, idOfLoginUser, RoleOfLoginUser);
 	if (id == -1) {
+		std::cout << "\n ERROR: Not found id!\n";
+		system("pause");
+		return;
+	}
+	else if (id == -2)
+	{
 		system("pause");
 		return;
 	}
@@ -280,6 +310,12 @@ void editLastName(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLogi
 	std::cout << "\nChoose user by id to editing name: ";
 	int id = getUserById(conn, idOfLoginUser, RoleOfLoginUser);
 	if (id == -1) {
+		std::cout << "\n ERROR: Not found id!\n";
+		system("pause");
+		return;
+	}
+	else if (id == -2)
+	{
 		system("pause");
 		return;
 	}
@@ -338,7 +374,7 @@ int getUserById(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginU
 		std::cin.clear();
 		std::cin.ignore(INT_MAX, '\n');
 		std::cout << "\n ERROR: wrong integer value \n";
-		return -1;
+		return -2;
 	}
 
 	nanodbc::statement findUser(conn);
@@ -347,6 +383,7 @@ int getUserById(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginU
 		SELECT 
 			Id, UserName, Password, FirstName, LastName, 
 			DateOfCreation, Role, IdOfCreator, DateOfLastChange, IdOfUserLastChange
+			,IsDeleted
 		FROM Users
 		WHERE Id = ?
 	)");
@@ -354,12 +391,11 @@ int getUserById(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginU
 	findUser.bind(0, &id);
 
 	auto result = nanodbc::execute(findUser);
+
 	if (result.next()){
-		printUser(conn, result);
-		return id;
+		return printUser(conn, result);
 	}
 	else{
-		std::cout << "\n ERROR: Not found id!\n";
 		return -1;
 	}
 }
@@ -370,6 +406,7 @@ void createUser(nanodbc::connection conn, int& idOfLoginUser,bool& RoleOfLoginUs
 	std::string FirstName;
 	std::string LastName;
 	bool role;
+	int IsDeleted = 0;
 	system("cls");
 	std::cout << "Choose username: ";
 	std::cin >> UserName;
@@ -389,7 +426,7 @@ void createUser(nanodbc::connection conn, int& idOfLoginUser,bool& RoleOfLoginUs
 	nanodbc::prepare(creatingNewUser, R"(
 		INSERT INTO Users (
 		UserName, Password, FirstName, LastName, Role
-		,IdOfCreator, IdOfUserLastChange) 
+		,IdOfCreator, IdOfUserLastChange, IsDeleted) 
 		VALUES
 		(?, ?, ?, ?, ?, ?, ?) ;
 	)");
@@ -401,6 +438,7 @@ void createUser(nanodbc::connection conn, int& idOfLoginUser,bool& RoleOfLoginUs
 	creatingNewUser.bind(4, &getRole);
 	creatingNewUser.bind(5, &idOfLoginUser);
 	creatingNewUser.bind(6, &idOfLoginUser);
+	creatingNewUser.bind(7, &IsDeleted);
 
 	nanodbc::execute(creatingNewUser);
 	std::cout << "\nCreate successfully :)\n\n";
@@ -409,48 +447,55 @@ void createUser(nanodbc::connection conn, int& idOfLoginUser,bool& RoleOfLoginUs
 }
 
 void getListOfAllUsers(nanodbc::connection conn) {
-	auto result = nanodbc::execute(conn, NANODBC_TEXT("SELECT Id, UserName, Password, FirstName, LastName, DateOfCreation, Role, IdOfCreator, DateOfLastChange, IdOfUserLastChange FROM Users"));
+	auto result = nanodbc::execute(conn, NANODBC_TEXT("SELECT Id, UserName, Password, FirstName, LastName, DateOfCreation, Role, IdOfCreator, DateOfLastChange, IdOfUserLastChange, IsDeleted FROM Users"));
 	while (result.next())
-	{
 		printUser(conn, result);
-		std::cout << "\n";
-	}
 	system("pause");
 }
 
-void printUser(nanodbc::connection conn, nanodbc::result& result) 
+int printUser(nanodbc::connection conn, nanodbc::result& result) 
 {
-	auto Id = result.get<int>(0);
-	auto UserName = result.get<nanodbc::string>(1);
-	auto Password = result.get<nanodbc::string>(2);
-	auto FirstName = result.get<nanodbc::string>(3, "null");
-	auto LastName = result.get<nanodbc::string>(4, "null");
-	auto DateOfCreation = result.get<nanodbc::timestamp>(5);
-	auto Role = result.get<int>(6);
-	auto IdOfCreator = result.get<int>(7, NULL);
-	auto DateOfLastChange = result.get<nanodbc::timestamp>(8);
-	auto IdOfUserLastChange = result.get<int>(9, NULL);
-	std::cout << "\nRole: ";
-	if (Role)
-		std::cout << "Admin role\n";
+	auto IsDeleted = result.get<int>(10);
+	if (IsDeleted == 0)
+	{
+		auto Id = result.get<int>(0);
+		auto UserName = result.get<nanodbc::string>(1);
+		auto Password = result.get<nanodbc::string>(2);
+		auto FirstName = result.get<nanodbc::string>(3, "null");
+		auto LastName = result.get<nanodbc::string>(4, "null");
+		auto DateOfCreation = result.get<nanodbc::timestamp>(5);
+		auto Role = result.get<int>(6);
+		auto IdOfCreator = result.get<int>(7, NULL);
+		auto DateOfLastChange = result.get<nanodbc::timestamp>(8);
+		auto IdOfUserLastChange = result.get<int>(9, NULL);
+		std::cout << "\nRole: ";
+		if (Role)
+			std::cout << "Admin role\n";
+		else
+			std::cout << "User role\n";
+		std::cout << "Id: " << Id << "\n";
+		std::cout << "Username: " << UserName << "\n";
+		std::cout << "Password: " << Password << "\n";
+		std::cout << "Firstname: " << FirstName << "\n";
+		std::cout << "Lastname: " << LastName << "\n";
+		std::cout << "Date of creation: " << DateOfCreation.year << "/" << DateOfCreation.month << "/" << DateOfCreation.day << " " << DateOfCreation.hour << ":" << DateOfCreation.min << ":" << DateOfCreation.sec << "\n";
+		std::cout << "Id of creator: ";
+		if (IdOfCreator == 0)
+			std::cout << "null\n";
+		else
+			std::cout << IdOfCreator << "\n";
+		std::cout << "Date of last change: " << DateOfLastChange.year << "/" << DateOfLastChange.month << "/" << DateOfLastChange.day << " " << DateOfLastChange.hour << ":" << DateOfLastChange.min << ":" << DateOfLastChange.sec << "\n";
+		std::cout << "Id of the user that did the last change: ";
+		if (IdOfUserLastChange == 0)
+			std::cout << "null\n";
+		else
+			std::cout << IdOfUserLastChange << "\n";
+		std::cout << "======================================\n";
+		std::cout << "\n";
+		return Id;
+	}
 	else
-		std::cout << "User role\n";
-	std::cout << "Id: " << Id << "\n";
-	std::cout << "Username: " << UserName << "\n";
-	std::cout << "Password: " << Password << "\n";
-	std::cout << "Firstname: " << FirstName << "\n";
-	std::cout << "Lastname: " << LastName << "\n";
-	std::cout << "Date of creation: " << DateOfCreation.year << "/" << DateOfCreation.month << "/" << DateOfCreation.day << " " << DateOfCreation.hour << ":" << DateOfCreation.min << ":" << DateOfCreation.sec << "\n";
-	std::cout << "Id of creator: ";
-	if (IdOfCreator == 0)
-		std::cout << "null\n";
-	else
-		std::cout << IdOfCreator << "\n";
-	std::cout << "Date of last change: " << DateOfLastChange.year << "/" << DateOfLastChange.month << "/" << DateOfLastChange.day << " " << DateOfLastChange.hour << ":" << DateOfLastChange.min << ":" << DateOfLastChange.sec << "\n";
-	std::cout << "Id of the user that did the last change: ";
-	if (IdOfUserLastChange == 0)
-		std::cout << "null\n";
-	else
-		std::cout << IdOfUserLastChange << "\n";
-	std::cout << "======================================\n";
+	{
+		return -1;
+	}
 }
