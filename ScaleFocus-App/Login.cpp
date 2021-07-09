@@ -2,30 +2,39 @@
 
 
 bool CheckUserInputForUserName(std::string UserName, nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser) {
-	auto result = nanodbc::execute(conn, NANODBC_TEXT("SELECT Id, Role ,UserName FROM Users"));
+	auto result = nanodbc::execute(conn, NANODBC_TEXT("SELECT Id, Role ,UserName, IsDeleted FROM Users"));
+	
 	while (result.next())
 	{
-		auto dbIdUser = result.get<int>(0);
-		auto dbRoleUser = result.get<int>(1);
-		auto dbUserName = result.get<nanodbc::string>(2);
-		if (UserName == dbUserName)
+		auto IsDeleted = result.get<int>(3);
+		if (IsDeleted == 0)
 		{
-			idOfLoginUser = dbIdUser;
-			RoleOfLoginUser = dbRoleUser;
-			return true;
+			auto dbIdUser = result.get<int>(0);
+			auto dbRoleUser = result.get<int>(1);
+			auto dbUserName = result.get<nanodbc::string>(2);
+			if (UserName == dbUserName)
+			{
+				idOfLoginUser = dbIdUser;
+				RoleOfLoginUser = dbRoleUser;
+				return true;
+			}
 		}
 	}
 	return false;
 }
 
 bool CheckUserInputForPassword(std::string encryptedPassword, nanodbc::connection conn) {
-	auto result = nanodbc::execute(conn, NANODBC_TEXT("SELECT Password FROM Users"));
+	auto result = nanodbc::execute(conn, NANODBC_TEXT("SELECT Password, IsDeleted FROM Users"));
 	while (result.next())
 	{
-		auto dbPassword = result.get<nanodbc::string>(0);
-		if (encryptedPassword == dbPassword)
+		auto IsDeleted = result.get<int>(1);
+		if (IsDeleted == 0)
 		{
-			return true;
+			auto dbPassword = result.get<nanodbc::string>(0);
+			if (encryptedPassword == dbPassword)
+			{
+				return true;
+			}
 		}
 	}
 	return false;
