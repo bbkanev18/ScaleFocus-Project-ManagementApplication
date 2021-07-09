@@ -25,4 +25,10 @@ void subEditMenu(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLogin
 
 void editUserName(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser);
 
-int getUserByIdForEdit(nanodbc::connection conn, int failToEnterId, int& idOfLoginUser, bool& RoleOfLoginUser);
+void editPassword(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser);
+
+void editFirstName(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser);
+
+void editLastName(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser);
+
+int getUserByIdForEdit(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser);

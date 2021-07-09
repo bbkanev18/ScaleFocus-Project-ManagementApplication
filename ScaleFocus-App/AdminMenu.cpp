@@ -53,12 +53,20 @@ void subEditMenu(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLogin
 	{
 		int failToEnterId = 5;
 		system("cls");
-		std::cout << "---Edit Menu---\n1. Change Username\n2. Change password\n3. Change firstname\n4. Change lastname\nEsc. To back in user menu\n";
+		std::cout << "---Edit Menu---\n1. Change username\n2. Change password\n3. Change firstname\n4. Change lastname\nEsc. To back in user menu\n";
 		switch (_getch())
 		{
 		case '1':
 			editUserName(conn, idOfLoginUser, RoleOfLoginUser);
 			break;
+		case '2':
+			editPassword(conn, idOfLoginUser, RoleOfLoginUser);
+			break;
+		case '3':
+			editFirstName(conn, idOfLoginUser, RoleOfLoginUser);
+			break;
+		case '4':
+			editLastName(conn, idOfLoginUser, RoleOfLoginUser);
 		case 27:
 			isTrue = false;
 			subAdminUserMenu(conn, idOfLoginUser, RoleOfLoginUser);
@@ -96,9 +104,8 @@ void subMenuListUser(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfL
 
 void editUserName(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser) {
 	std::string newUseName;
-	int failToEnterId = 5;
 	
-	int id = getUserByIdForEdit(conn, failToEnterId, idOfLoginUser, RoleOfLoginUser);
+	int id = getUserByIdForEdit(conn, idOfLoginUser, RoleOfLoginUser);
 	std::cout << "\nIs that correct user you want to edit(y/n)";
 	switch (_getch())
 	{
@@ -124,8 +131,14 @@ void editUserName(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLogi
 		changeOldUserName.bind(2, &id);
 		auto result = nanodbc::execute(changeOldUserName);
 
-		if (result.next())
+		if (result.affected_rows() == 1)
 			std::cout << "\nChange successfully :)\n";
+		else
+		{
+			std::cout << "\n ERROR: In change username\n";
+			system("pause");
+			subEditMenu(conn, idOfLoginUser, RoleOfLoginUser);
+		}
 		system("pause");
 		break;
 	}
@@ -134,11 +147,162 @@ void editUserName(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLogi
 		subEditMenu(conn, idOfLoginUser, RoleOfLoginUser);
 		break;
 	default:
+		subEditMenu(conn, idOfLoginUser, RoleOfLoginUser);
 		break;
 	}
 }
 
-int getUserByIdForEdit(nanodbc::connection conn, int failToEnterId, int& idOfLoginUser, bool& RoleOfLoginUser) {
+void editPassword(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser) {
+	std::string newPassword;
+
+	int id = getUserByIdForEdit(conn, idOfLoginUser, RoleOfLoginUser);
+	std::cout << "\nIs that correct user you want to edit(y/n)";
+	switch (_getch())
+	{
+	case 'y':
+	case 'Y':
+	{
+		std::cout << "\n\nChoose new password: ";
+		HidePassword(newPassword);
+		nanodbc::statement changeOldUserName(conn);
+		nanodbc::prepare(changeOldUserName, R"(
+			UPDATE Users
+			SET
+			Password = ?
+			,IdOfUserLastChange = ?
+			,DateOfLastChange = GETDATE()
+			WHERE Id = ?;
+		)");
+
+		nanodbc::string encryptedPassword = sha256(newPassword);
+
+		changeOldUserName.bind(0, encryptedPassword.c_str());
+		changeOldUserName.bind(1, &idOfLoginUser);
+		changeOldUserName.bind(2, &id);
+		auto result = nanodbc::execute(changeOldUserName);
+
+		if (result.affected_rows() == 1)
+			std::cout << "\nChange successfully :)\n";
+		else
+		{
+			std::cout << "\n ERROR: In change password\n";
+			system("pause");
+			subEditMenu(conn, idOfLoginUser, RoleOfLoginUser);
+		}
+		system("pause");
+		break;
+	}
+	case 'n':
+	case 'N':
+		subEditMenu(conn, idOfLoginUser, RoleOfLoginUser);
+		break;
+	default:
+		subEditMenu(conn, idOfLoginUser, RoleOfLoginUser);
+		break;
+	}
+}
+
+void editFirstName(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser) {
+	std::string newFirstName;
+
+	int id = getUserByIdForEdit(conn, idOfLoginUser, RoleOfLoginUser);
+	std::cout << "\nIs that correct user you want to edit(y/n)";
+	switch (_getch())
+	{
+	case 'y':
+	case 'Y':
+	{
+		std::cout << "\n\nChoose new firstname: ";
+		std::cin >> newFirstName;
+		nanodbc::statement changeOldUserName(conn);
+		nanodbc::prepare(changeOldUserName, R"(
+			UPDATE Users
+			SET
+			FirstName = ?
+			,IdOfUserLastChange = ?
+			,DateOfLastChange = GETDATE()
+			WHERE Id = ?;
+		)");
+
+		nanodbc::string nwFN = newFirstName;
+
+		changeOldUserName.bind(0, nwFN.c_str());
+		changeOldUserName.bind(1, &idOfLoginUser);
+		changeOldUserName.bind(2, &id);
+		auto result = nanodbc::execute(changeOldUserName);
+
+		if (result.affected_rows() == 1)
+			std::cout << "\nChange successfully :)\n";
+		else
+		{
+			std::cout << "\n ERROR: In change password\n";
+			system("pause");
+			subEditMenu(conn, idOfLoginUser, RoleOfLoginUser);
+		}
+		system("pause");
+		break;
+	}
+	case 'n':
+	case 'N':
+		subEditMenu(conn, idOfLoginUser, RoleOfLoginUser);
+		break;
+	default:
+		subEditMenu(conn, idOfLoginUser, RoleOfLoginUser);
+		break;
+	}
+}
+
+void editLastName(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser) {
+	std::string newLastName;
+
+	int id = getUserByIdForEdit(conn, idOfLoginUser, RoleOfLoginUser);
+	std::cout << "\nIs that correct user you want to edit(y/n)";
+	switch (_getch())
+	{
+	case 'y':
+	case 'Y':
+	{
+		std::cout << "\n\nChoose new lastname: ";
+		std::cin >> newLastName;
+		nanodbc::statement changeOldUserName(conn);
+		nanodbc::prepare(changeOldUserName, R"(
+			UPDATE Users
+			SET
+			 LastName = ?
+			,IdOfUserLastChange = ?
+			,DateOfLastChange = GETDATE()
+			WHERE Id = ?;
+		)");
+
+		nanodbc::string nwLN = newLastName;
+
+		changeOldUserName.bind(0, nwLN.c_str());
+		changeOldUserName.bind(1, &idOfLoginUser);
+		changeOldUserName.bind(2, &id);
+		auto result = nanodbc::execute(changeOldUserName);
+
+		if (result.affected_rows() == 1)
+			std::cout << "\nChange successfully :)\n";
+		else
+		{
+			std::cout << "\n ERROR: In change password\n";
+			system("pause");
+			subEditMenu(conn, idOfLoginUser, RoleOfLoginUser);
+		}
+		system("pause");
+		break;
+	}
+	case 'n':
+	case 'N':
+		subEditMenu(conn, idOfLoginUser, RoleOfLoginUser);
+		break;
+	default:
+		subEditMenu(conn, idOfLoginUser, RoleOfLoginUser);
+		break;
+	}
+}
+
+int getUserByIdForEdit(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser) {
 	int id;
 
 	std::cout << "\nChoose user by id to editing name: ";
@@ -147,10 +311,8 @@ int getUserByIdForEdit(nanodbc::connection conn, int failToEnterId, int& idOfLog
 	{
 		std::cin.clear();
 		std::cin.ignore(INT_MAX, '\n');
-	}
-	if (failToEnterId == 0)
-	{
-		std::cout << "\n!You enter 5 time wrong id!\n";
+		std::cout << "\n ERROR: wrong integer value \n";
+		system("pause");
 		subEditMenu(conn, idOfLoginUser, RoleOfLoginUser);
 	}
 
