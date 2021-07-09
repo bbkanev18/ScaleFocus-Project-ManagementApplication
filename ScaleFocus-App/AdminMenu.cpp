@@ -69,6 +69,7 @@ void subEditMenu(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLogin
 			break;
 		case '4':
 			editLastName(conn, idOfLoginUser, RoleOfLoginUser);
+			break;
 		case 27:
 			isTrue = false;
 			subAdminUserMenu(conn, idOfLoginUser, RoleOfLoginUser);
@@ -118,13 +119,87 @@ void subMenuListUser(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfL
 }
 
 void subDeleteMenu(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser) {
+	bool isTrue = true;
+	while (isTrue)
+	{
+		system("cls");
+		std::cout << "---Delete Menu---\n1. Delete user by Id\n2. Delete all users( !back to defalt! )\nEsc. To back in user menu\n";
+		switch (_getch())
+		{
+		case '1':
+			deleteOneUser(conn, idOfLoginUser, RoleOfLoginUser);
+			break;
+		case '2':
+			break;
+		case 27:
+			isTrue = false;
+			subAdminUserMenu(conn, idOfLoginUser, RoleOfLoginUser);
+			break;
+		default:
+			break;
+		}
+	}
+}
 
+void deleteOneUser(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser) {
+	int IsDeleted = 1;
+
+	std::cout << "\nChoose user by id to delete: ";
+	int id = getUserById(conn, idOfLoginUser, RoleOfLoginUser);
+	if (id == -1) {
+		std::cout << "\n ERROR: Not found id!\n";
+		system("pause");
+		return;
+	}
+	else if (id == -2)
+	{
+		system("pause");
+		return;
+	}
+	std::cout << "\nIs that correct user you want to edit(y/n)";
+	switch (_getch())
+	{
+	case 'y':
+	case 'Y':
+	{
+		nanodbc::statement deleteUser(conn);
+
+		nanodbc::prepare(deleteUser, R"(
+			UPDATE Users
+			SET
+			IsDeleted = ?
+			WHERE Id = ?
+		)");
+
+		deleteUser.bind(0, &IsDeleted);
+		deleteUser.bind(1, &id);
+		auto result = nanodbc::execute(deleteUser);
+
+		if (result.affected_rows() == 1)
+			std::cout << "\nDelete successfully :)\n";
+		else
+		{
+			std::cout << "\n ERROR: In change username\n";
+			system("pause");
+			subDeleteMenu(conn, idOfLoginUser, RoleOfLoginUser);
+		}
+		system("pause");
+		break;
+	}
+	case 'n':
+	case 'N':
+		subDeleteMenu(conn, idOfLoginUser, RoleOfLoginUser);
+		break;
+	default:
+		subDeleteMenu(conn, idOfLoginUser, RoleOfLoginUser);
+		break;
+	}
 }
 
 void editUserName(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser) {
 	std::string newUseName;
 
-	std::cout << "\nChoose user by id to editing name: ";
+	std::cout << "\nChoose user by id to editing username: ";
 	int id = getUserById(conn, idOfLoginUser, RoleOfLoginUser);
 	if (id == -1){
 		std::cout << "\n ERROR: Not found id!\n";
@@ -185,7 +260,7 @@ void editUserName(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLogi
 void editPassword(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser) {
 	std::string newPassword;
 
-	std::cout << "\nChoose user by id to editing name: ";
+	std::cout << "\nChoose user by id to editing password: ";
 	int id = getUserById(conn, idOfLoginUser, RoleOfLoginUser);
 	if (id == -1) {
 		std::cout << "\n ERROR: Not found id!\n";
@@ -246,7 +321,7 @@ void editPassword(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLogi
 void editFirstName(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser) {
 	std::string newFirstName;
 
-	std::cout << "\nChoose user by id to editing name: ";
+	std::cout << "\nChoose user by id to editing firstname: ";
 	int id = getUserById(conn, idOfLoginUser, RoleOfLoginUser);
 	if (id == -1) {
 		std::cout << "\n ERROR: Not found id!\n";
@@ -307,7 +382,7 @@ void editFirstName(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLog
 void editLastName(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser) {
 	std::string newLastName;
 	
-	std::cout << "\nChoose user by id to editing name: ";
+	std::cout << "\nChoose user by id to editing lastname: ";
 	int id = getUserById(conn, idOfLoginUser, RoleOfLoginUser);
 	if (id == -1) {
 		std::cout << "\n ERROR: Not found id!\n";
@@ -428,7 +503,7 @@ void createUser(nanodbc::connection conn, int& idOfLoginUser,bool& RoleOfLoginUs
 		UserName, Password, FirstName, LastName, Role
 		,IdOfCreator, IdOfUserLastChange, IsDeleted) 
 		VALUES
-		(?, ?, ?, ?, ?, ?, ?) ;
+		(?, ?, ?, ?, ?, ?, ?, ?);
 	)");
 
 	creatingNewUser.bind(0, UserName.c_str());
