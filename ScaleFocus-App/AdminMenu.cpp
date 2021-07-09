@@ -130,6 +130,8 @@ void subDeleteMenu(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLog
 			deleteOneUser(conn, idOfLoginUser, RoleOfLoginUser);
 			break;
 		case '2':
+			delteAllUsers(conn, idOfLoginUser, RoleOfLoginUser);
+			LogMenu(conn, idOfLoginUser, RoleOfLoginUser);
 			break;
 		case 27:
 			isTrue = false;
@@ -194,6 +196,46 @@ void deleteOneUser(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLog
 		subDeleteMenu(conn, idOfLoginUser, RoleOfLoginUser);
 		break;
 	}
+}
+
+void delteAllUsers(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser) {
+	nanodbc::statement deleteUsers(conn);
+
+	nanodbc::prepare(deleteUsers, R"(
+		UPDATE Users
+		SET
+		IsDeleted = 1
+	)");
+
+	nanodbc::execute(deleteUsers);
+
+	resetDefaultAdmin(conn, idOfLoginUser, RoleOfLoginUser);
+
+}
+
+
+void resetDefaultAdmin(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser) 
+{
+	nanodbc::statement resetAdmin(conn);
+
+	nanodbc::prepare(resetAdmin, R"(
+		UPDATE Users
+		SET
+		IsDeleted = 0,
+		UserName = 'admin',
+		Password = '713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca',
+		DateOfCreation = GETDATE(),
+		DateOfLastChange = GETDATE(),
+		IdOfUserLastChange = NULL
+
+		WHERE IdOfCreator IS NULL
+	)");
+
+	auto result = nanodbc::execute(resetAdmin);
+
+	std::cout << "\n Reset successfully! :)\n";
+
+	system("pause");
 }
 
 void editUserName(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser) {
