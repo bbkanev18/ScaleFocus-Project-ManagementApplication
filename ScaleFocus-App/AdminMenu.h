@@ -15,13 +15,13 @@ void subMenuListUser(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfL
 
 void getListOfAllUsers(nanodbc::connection conn);
 
-void getUserListById(nanodbc::connection conn, int failToEnterId, int& idOfLoginUser, bool& RoleOfLoginUser);
-
 void printUser(nanodbc::connection conn, nanodbc::result& result);
 
 void createUser(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser);
 
 void subEditMenu(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser);
+
+void subDeleteMenu(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser);
 
 void editUserName(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser);
 
@@ -31,4 +31,4 @@ void editFirstName(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLog
 
 void editLastName(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser);
 
-int getUserByIdForEdit(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser);
+int getUserById(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser);

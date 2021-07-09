@@ -90,7 +90,10 @@ void subMenuListUser(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfL
 			getListOfAllUsers(conn);
 			break;
 		case '2':
-			getUserListById(conn, failToEnterId, idOfLoginUser, RoleOfLoginUser);
+
+			std::cout << "\nChoose user id to print: ";
+			getUserById(conn, idOfLoginUser, RoleOfLoginUser);
+			system("pause");
 			break;
 		case 27:
 			isTrue = false;
@@ -102,10 +105,19 @@ void subMenuListUser(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfL
 	}
 }
 
+void subDeleteMenu(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser) {
+
+}
+
 void editUserName(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser) {
 	std::string newUseName;
-	
-	int id = getUserByIdForEdit(conn, idOfLoginUser, RoleOfLoginUser);
+
+	std::cout << "\nChoose user by id to editing name: ";
+	int id = getUserById(conn, idOfLoginUser, RoleOfLoginUser);
+	if (id == -1){
+		system("pause"); 
+		return;
+	}
 	std::cout << "\nIs that correct user you want to edit(y/n)";
 	switch (_getch())
 	{
@@ -155,7 +167,12 @@ void editUserName(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLogi
 void editPassword(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser) {
 	std::string newPassword;
 
-	int id = getUserByIdForEdit(conn, idOfLoginUser, RoleOfLoginUser);
+	std::cout << "\nChoose user by id to editing name: ";
+	int id = getUserById(conn, idOfLoginUser, RoleOfLoginUser);
+	if (id == -1) {
+		system("pause");
+		return;
+	}
 	std::cout << "\nIs that correct user you want to edit(y/n)";
 	switch (_getch())
 	{
@@ -205,7 +222,12 @@ void editPassword(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLogi
 void editFirstName(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser) {
 	std::string newFirstName;
 
-	int id = getUserByIdForEdit(conn, idOfLoginUser, RoleOfLoginUser);
+	std::cout << "\nChoose user by id to editing name: ";
+	int id = getUserById(conn, idOfLoginUser, RoleOfLoginUser);
+	if (id == -1) {
+		system("pause");
+		return;
+	}
 	std::cout << "\nIs that correct user you want to edit(y/n)";
 	switch (_getch())
 	{
@@ -254,8 +276,13 @@ void editFirstName(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLog
 
 void editLastName(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser) {
 	std::string newLastName;
-
-	int id = getUserByIdForEdit(conn, idOfLoginUser, RoleOfLoginUser);
+	
+	std::cout << "\nChoose user by id to editing name: ";
+	int id = getUserById(conn, idOfLoginUser, RoleOfLoginUser);
+	if (id == -1) {
+		system("pause");
+		return;
+	}
 	std::cout << "\nIs that correct user you want to edit(y/n)";
 	switch (_getch())
 	{
@@ -302,18 +329,16 @@ void editLastName(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLogi
 	}
 }
 
-int getUserByIdForEdit(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser) {
+int getUserById(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser) {
 	int id;
 
-	std::cout << "\nChoose user by id to editing name: ";
 	std::cin >> id;
 	if (std::cin.fail())
 	{
 		std::cin.clear();
 		std::cin.ignore(INT_MAX, '\n');
 		std::cout << "\n ERROR: wrong integer value \n";
-		system("pause");
-		subEditMenu(conn, idOfLoginUser, RoleOfLoginUser);
+		return -1;
 	}
 
 	nanodbc::statement findUser(conn);
@@ -329,9 +354,14 @@ int getUserByIdForEdit(nanodbc::connection conn, int& idOfLoginUser, bool& RoleO
 	findUser.bind(0, &id);
 
 	auto result = nanodbc::execute(findUser);
-	if (result.next())
+	if (result.next()){
 		printUser(conn, result);
-	return id;
+		return id;
+	}
+	else{
+		std::cout << "\n ERROR: Not found id!\n";
+		return -1;
+	}
 }
 
 void createUser(nanodbc::connection conn, int& idOfLoginUser,bool& RoleOfLoginUser) {
@@ -385,45 +415,6 @@ void getListOfAllUsers(nanodbc::connection conn) {
 		printUser(conn, result);
 		std::cout << "\n";
 	}
-	system("pause");
-}
-
-void getUserListById(nanodbc::connection conn, int failToEnterId, int& idOfLoginUser, bool& RoleOfLoginUser)
-{
-	
-	nanodbc::statement findUser(conn);
-
-	nanodbc::prepare(findUser, R"(
-		SELECT 
-			Id, UserName, Password, FirstName, LastName, 
-			DateOfCreation, Role, IdOfCreator, DateOfLastChange, IdOfUserLastChange
-		FROM Users
-		WHERE Id = ?
-	)");
-
-	int id;
-	system("cls");
-	std::cout << "--If you enter " << failToEnterId << " times wrong you go back to list menu--\n";
-	std::cout << "Enter User Id: ";
-	std::cin >> id;
-	failToEnterId--;
-	if (std::cin.fail())
-	{
-		std::cin.clear();
-		std::cin.ignore(INT_MAX, '\n');
-	}
-	if (failToEnterId == 0)
-		subMenuListUser(conn, idOfLoginUser, RoleOfLoginUser);
-	
-
-	findUser.bind(0, &id);
-
-	auto result = nanodbc::execute(findUser);
-	if (result.next()) 
-		printUser(conn, result);
-	else 
-		getUserListById(conn, failToEnterId, idOfLoginUser, RoleOfLoginUser);
-	std::cout << "\n";
 	system("pause");
 }
 
