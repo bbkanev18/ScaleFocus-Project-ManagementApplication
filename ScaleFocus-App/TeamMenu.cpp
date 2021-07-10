@@ -65,6 +65,7 @@ void getAllTeams(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLogin
 	)");
 
 	auto result = nanodbc::execute(getTeam);
+
 	std::cout << "\n";
 	while (result.next())
 	{
@@ -85,7 +86,7 @@ int printOneTeam(nanodbc::connection conn, nanodbc::result& result) {
 
 	if (dbIsDeleted == 0)
 	{
-
+		std::cout << "======================================\n";
 		std::cout << "Id: " << dbId << "\n";
 		std::cout << "Title: " << dbTitle << "\n";
 		std::cout << "Date of creation: " << dbDateOfCreation.year << "/" << dbDateOfCreation.month << "/" << dbDateOfCreation.day << " " << dbDateOfCreation.hour << ":" << dbDateOfCreation.min << ":" << dbDateOfCreation.sec << "\n";
@@ -94,6 +95,24 @@ int printOneTeam(nanodbc::connection conn, nanodbc::result& result) {
 		std::cout << "Date of last change: " << dbDateOfLastChange.year << "/" << dbDateOfLastChange.month << "/" << dbDateOfLastChange.day << " " << dbDateOfLastChange.hour << ":" << dbDateOfLastChange.min << ":" << dbDateOfLastChange.sec << "\n";
 		std::cout << "Id of the user that did the last change: ";
 		printUserNameByIdOfLastChangeOnTeam(conn, dbId);
+		std::cout << "\nUser in Team:\n";
+
+
+		nanodbc::statement getUserAssignInTeam(conn);
+
+		nanodbc::prepare(getUserAssignInTeam, R"(
+			SELECT IdOfUser
+			FROM UsersTeams
+			WHERE IdOfTeam = ?
+		)");
+
+		getUserAssignInTeam.bind(0, &dbId);
+
+		auto result = nanodbc::execute(getUserAssignInTeam);
+		while (result.next()) {
+			printUserAssignInTeam(conn, result);
+		}
+
 		std::cout << "======================================\n";
 		return dbId;
 	}
@@ -158,4 +177,27 @@ void printUserNameByIdOfLastChangeOnTeam(nanodbc::connection conn, int id) {
 	result1.next();
 	std::cout << result1.get<nanodbc::string>(0) << "\n";
 
+}
+
+void printUserAssignInTeam(nanodbc::connection conn, nanodbc::result& result) {
+	nanodbc::statement getUserAssignInTeam(conn);
+	
+	nanodbc::prepare(getUserAssignInTeam, R"(
+		SELECT 
+			FirstName,
+			LastName
+		FROM Users
+		WHERE Id = ?
+	)");
+
+	int idOfUser = result.get<int>(0);
+	getUserAssignInTeam.bind(0, &idOfUser);
+
+	auto result2 = nanodbc::execute(getUserAssignInTeam);
+	
+
+	result2.next();
+	std::string dbFirstName = result2.get<nanodbc::string>(0);
+	std::string dbLastName = result2.get<nanodbc::string>(1);
+	std::cout << "\n--> " << dbFirstName << " " << dbLastName << "\n";
 }

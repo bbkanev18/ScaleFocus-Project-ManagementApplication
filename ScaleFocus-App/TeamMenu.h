@@ -16,3 +16,5 @@ int printOneTeam(nanodbc::connection conn, nanodbc::result& result);
 void printUserNameByIdOfCreatorOnTeam(nanodbc::connection conn, int id);
 
 void printUserNameByIdOfLastChangeOnTeam(nanodbc::connection conn, int id);
+
+void printUserAssignInTeam(nanodbc::connection conn, nanodbc::result& result);

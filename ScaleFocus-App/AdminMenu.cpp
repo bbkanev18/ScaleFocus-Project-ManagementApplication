@@ -605,6 +605,7 @@ int printUser(nanodbc::connection conn, nanodbc::result& result)
 	auto IsDeleted = result.get<int>(10);
 	if (IsDeleted == 0)
 	{
+		std::cout << "\n======================================\n";
 		auto Id = result.get<int>(0);
 		auto UserName = result.get<nanodbc::string>(1);
 		auto Password = result.get<nanodbc::string>(2);
