@@ -57,7 +57,7 @@ int main() try
 	LogMenu(conn, IdOfLoginUser, RoleOfLoginUser);
 
 
-
+	
 	
 	//std::string username = "Gosho";
 

@@ -39,3 +39,7 @@ void deleteOneUser(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLog
 void delteAllUsers(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser);
 
 void resetDefaultAdmin(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser);
+
+void printUserNameByIdOfCreator(nanodbc::connection conn, int id);
+
+void printUserNameByIdOfLastChange(nanodbc::connection conn, int id);

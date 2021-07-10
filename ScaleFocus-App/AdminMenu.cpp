@@ -629,67 +629,14 @@ int printUser(nanodbc::connection conn, nanodbc::result& result)
 		std::cout << "Id of creator: ";
 		if (IdOfCreator == 0)
 			std::cout << "null\n";
-		else{
-			nanodbc::statement getIdOfCreator(conn);
-
-			nanodbc::prepare(getIdOfCreator, R"(
-			SELECT IdOfCreator
-			FROM Users
-			WHERE Id = ?
-			)");
-			getIdOfCreator.bind(0, &Id);
-
-			auto result = nanodbc::execute(getIdOfCreator);
-			result.next();
-			int newId = result.get<int>(0);
-
-			nanodbc::prepare(getIdOfCreator, R"(
-			SELECT UserName
-			FROM Users
-			WHERE Id = ?
-			)");
-
-			getIdOfCreator.bind(0, &newId);
-
-			auto result1 = nanodbc::execute(getIdOfCreator);
-
-
-			result1.next();
-			std::cout << result1.get<nanodbc::string>(0) << "\n";
-		}
-
+		else
+			printUserNameByIdOfCreator(conn, Id);
 		std::cout << "Date of last change: " << DateOfLastChange.year << "/" << DateOfLastChange.month << "/" << DateOfLastChange.day << " " << DateOfLastChange.hour << ":" << DateOfLastChange.min << ":" << DateOfLastChange.sec << "\n";
 		std::cout << "Id of the user that did the last change: ";
 		if (IdOfUserLastChange == 0)
 			std::cout << "null\n";
-		else {
-			nanodbc::statement getIdOfLastChange(conn);
-
-			nanodbc::prepare(getIdOfLastChange, R"(
-			SELECT IdOfUserLastChange
-			FROM Users
-			WHERE Id = ?
-			)");
-			getIdOfLastChange.bind(0, &Id);
-
-			auto result = nanodbc::execute(getIdOfLastChange);
-			result.next();
-			int newId = result.get<int>(0);
-
-			nanodbc::prepare(getIdOfLastChange, R"(
-			SELECT UserName
-			FROM Users
-			WHERE Id = ?
-			)");
-
-			getIdOfLastChange.bind(0, &newId);
-
-			auto result1 = nanodbc::execute(getIdOfLastChange);
-
-
-			result1.next();
-			std::cout << result1.get<nanodbc::string>(0) << "\n";
-		}
+		else 
+			printUserNameByIdOfLastChange(conn, Id);
 		std::cout << "======================================\n";
 		std::cout << "\n";
 		return Id;
@@ -700,3 +647,60 @@ int printUser(nanodbc::connection conn, nanodbc::result& result)
 	}
 }
 
+void printUserNameByIdOfCreator(nanodbc::connection conn, int id) {
+	nanodbc::statement getIdOfCreator(conn);
+
+	nanodbc::prepare(getIdOfCreator, R"(
+			SELECT IdOfCreator
+			FROM Users
+			WHERE Id = ?
+			)");
+	getIdOfCreator.bind(0, &id);
+
+	auto result = nanodbc::execute(getIdOfCreator);
+	result.next();
+	int newId = result.get<int>(0);
+
+	nanodbc::prepare(getIdOfCreator, R"(
+			SELECT UserName
+			FROM Users
+			WHERE Id = ?
+			)");
+
+	getIdOfCreator.bind(0, &newId);
+
+	auto result1 = nanodbc::execute(getIdOfCreator);
+
+
+	result1.next();
+	std::cout << result1.get<nanodbc::string>(0) << "\n";
+}
+
+void printUserNameByIdOfLastChange(nanodbc::connection conn, int id) {
+	nanodbc::statement getIdOfLastChange(conn);
+
+	nanodbc::prepare(getIdOfLastChange, R"(
+			SELECT IdOfUserLastChange
+			FROM Users
+			WHERE Id = ?
+			)");
+	getIdOfLastChange.bind(0, &id);
+
+	auto result = nanodbc::execute(getIdOfLastChange);
+	result.next();
+	int newId = result.get<int>(0);
+
+	nanodbc::prepare(getIdOfLastChange, R"(
+			SELECT UserName
+			FROM Users
+			WHERE Id = ?
+			)");
+
+	getIdOfLastChange.bind(0, &newId);
+
+	auto result1 = nanodbc::execute(getIdOfLastChange);
+
+
+	result1.next();
+	std::cout << result1.get<nanodbc::string>(0) << "\n";
+}
