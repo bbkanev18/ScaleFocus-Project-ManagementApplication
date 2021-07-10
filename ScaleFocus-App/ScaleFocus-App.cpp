@@ -6,6 +6,7 @@
 #include "ClassUser.h"
 #include"Login.h"
 #include "AdminMenu.h"
+#include "TeamMenu.h"
 #include "sha256.h"
 
 
@@ -54,6 +55,8 @@ int main() try
 	int IdOfLoginUser;
 	bool RoleOfLoginUser;
 	LogMenu(conn, IdOfLoginUser, RoleOfLoginUser);
+
+
 
 	
 	//std::string username = "Gosho";

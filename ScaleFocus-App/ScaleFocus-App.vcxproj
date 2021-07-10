@@ -147,12 +147,14 @@
     <ClCompile Include="ScaleFocus-App.cpp" />
     <ClCompile Include="ClassUser.cpp" />
     <ClCompile Include="sha256.cpp" />
+    <ClCompile Include="TeamMenu.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AdminMenu.h" />
     <ClInclude Include="ClassUser.h" />
     <ClInclude Include="sha256.h" />
     <ClInclude Include="Login.h" />
+    <ClInclude Include="TeamMenu.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

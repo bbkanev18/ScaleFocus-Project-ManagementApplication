@@ -5,6 +5,7 @@
 #include <nanodbc.h>
 
 #include "Login.h"
+#include "TeamMenu.h"
 #include "sha256.h"
 
 void adminMenu(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser);
