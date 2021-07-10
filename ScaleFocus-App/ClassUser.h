@@ -13,8 +13,8 @@ public:
 	int& getId();
 	std::string& getUserName();
 	std::string& getPassword();
-	std::string getFirstName();
-	std::string getLastName();
+	std::string& getFirstName();
+	std::string& getLastName();
 	bool& getRole(); //1 - for admin, 0 for user
 	int& getIdOfCreator();
 	int& getIdOfUserLastChange();

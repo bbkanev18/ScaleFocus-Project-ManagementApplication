@@ -254,6 +254,8 @@ void resetDefaultAdmin(nanodbc::connection conn, int& idOfLoginUser, bool& RoleO
 		IsDeleted = 0,
 		UserName = 'admin',
 		Password = '713bfda78870bf9d1b261f565286f85e97ee614efe5f0faf7c34e7ca4f65baca',
+		FirstName = 'admin',
+		LastName = 'admin',
 		DateOfCreation = GETDATE(),
 		DateOfLastChange = GETDATE(),
 		IdOfUserLastChange = NULL
@@ -523,6 +525,8 @@ int getUserById(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginU
 		std::cout << "\n ERROR: wrong integer value \n";
 		return -2;
 	}
+	if (id == -3)
+		return -3;
 
 	nanodbc::statement findUser(conn);
 
