@@ -15,6 +15,8 @@ void subTeamMenu(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLogin
 		case '2':
 			createTeam(conn, idOfLoginUser, RoleOfLoginUser);
 			break;
+		case '3':
+			subEditTeamMenu(conn, idOfLoginUser, RoleOfLoginUser);
 		case 27:
 			isTrue = false;
 			adminMenu(conn, idOfLoginUser, RoleOfLoginUser);
@@ -53,6 +55,29 @@ void subPrintTeamMenu(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOf
 			system("pause");
 			break;
 		}
+		case 27:
+			isTrue = false;
+			subTeamMenu(conn, idOfLoginUser, RoleOfLoginUser);
+			break;
+		default:
+			break;
+		}
+	}
+}
+
+void subEditTeamMenu(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser) {
+	bool isTrue = true;
+	while (isTrue)
+	{
+		system("cls");
+		std::cout << "---Edit Menu---\n1. Edit team title\n2. Add user in team\n3. Remove user in team\nEsc. To back in team menu\n";
+		switch (_getch())
+		{
+		case '1':
+			editTeamTitle(conn, idOfLoginUser, RoleOfLoginUser);
+			break;
+		case '2': 
+			break;
 		case 27:
 			isTrue = false;
 			subTeamMenu(conn, idOfLoginUser, RoleOfLoginUser);
@@ -112,6 +137,64 @@ void getAllTeams(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLogin
 	std::cout << "\n";
 	delete[] test;
 	system("pause");
+}
+
+void editTeamTitle(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser) {
+	std::string newTitle;
+	std::cout << "\nChoose team to edit title by id: ";
+	int id = getTeamById(conn, idOfLoginUser, RoleOfLoginUser);
+	if (id == -1) {
+		std::cout << "\n ERROR: Not found id!\n";
+		system("pause");
+		return;
+	}
+	else if (id == -2)
+	{
+		system("pause");
+		return;
+	}
+	std::cout << "\nIs that correct team you want to edit(y/n)";
+	switch (_getch())
+	{
+	case 'y':
+	case 'Y':{
+		std::cout << "\n\nChoose new title: ";
+		std::cin >> newTitle;
+		nanodbc::statement changeOldTitle(conn);
+		nanodbc::prepare(changeOldTitle, R"(
+			UPDATE Teams
+			SET
+			Title = ?
+			,IdOfUserLastChange = ?
+			,DateOfLastChange = GETDATE()
+			WHERE Id = ?;
+		)");
+		nanodbc::string nwT = newTitle;
+
+		changeOldTitle.bind(0, nwT.c_str());
+		changeOldTitle.bind(1, &idOfLoginUser);
+		changeOldTitle.bind(2, &id);
+		auto result = nanodbc::execute(changeOldTitle);
+
+		if (result.affected_rows() == 1)
+			std::cout << "\nChange successfully :)\n";
+		else
+		{
+			std::cout << "\n ERROR: In change title \n";
+			system("pause");
+			subEditTeamMenu(conn, idOfLoginUser, RoleOfLoginUser);
+		}
+		system("pause");
+		break;
+	}
+	case 'n':
+	case 'N':
+		subEditTeamMenu(conn, idOfLoginUser, RoleOfLoginUser);
+		break;
+	default:
+		subEditTeamMenu(conn, idOfLoginUser, RoleOfLoginUser);
+		break;
+	}
 }
 
 int getTeamById(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser) {

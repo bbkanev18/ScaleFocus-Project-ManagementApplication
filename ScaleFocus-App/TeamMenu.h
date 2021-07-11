@@ -9,6 +9,8 @@ void subTeamMenu(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLogin
 
 void subPrintTeamMenu(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser);
 
+void subEditTeamMenu(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser);
+
 void getAllTeams(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser);
 
 int getTeamById(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser);
@@ -24,3 +26,5 @@ int printUserAssignInTeam(nanodbc::connection conn, nanodbc::result& result);
 void createTeam(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser);
 
 void insertAssignUser(nanodbc::connection conn, int idOfTeam, int idOfUser, int& numberOfUser, int insertUserAlready[], int& counter);
+
+void editTeamTitle(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser);
