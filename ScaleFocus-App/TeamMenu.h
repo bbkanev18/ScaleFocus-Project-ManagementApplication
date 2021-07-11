@@ -23,4 +23,4 @@ int printUserAssignInTeam(nanodbc::connection conn, nanodbc::result& result);
 
 void createTeam(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser);
 
-void insertAssignUser(nanodbc::connection conn, int idOfTeam, int idOfUser, int& numberOfUser, int insertUserAlready[1000], int& counter);
+void insertAssignUser(nanodbc::connection conn, int idOfTeam, int idOfUser, int& numberOfUser, int insertUserAlready[], int& counter);

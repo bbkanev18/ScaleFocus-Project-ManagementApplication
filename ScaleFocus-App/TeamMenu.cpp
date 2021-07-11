@@ -385,7 +385,7 @@ void createTeam(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginU
 	system("pause");
 }
 
-void insertAssignUser(nanodbc::connection conn, int idOfTeam , int idOfUser, int& numberOfUser, int insertUserAlready[1000], int& counter) {
+void insertAssignUser(nanodbc::connection conn, int idOfTeam , int idOfUser, int& numberOfUser, int insertUserAlready[], int& counter) {
 
 	std::cout << "\nIs that correct user you want to add in team(y/n)";
 	switch (_getch())
