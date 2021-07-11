@@ -56,7 +56,7 @@ void LogMenu(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser
 		std::cout << "Welcome back: " << UserName << "\n";
 		system("pause");
 
-		if (RoleOfLoginUser)
+		if (RoleOfLoginUser == 1)
 			adminMenu(conn, idOfLoginUser, RoleOfLoginUser);
 		return ;
 	}
