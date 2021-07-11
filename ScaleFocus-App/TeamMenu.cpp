@@ -80,12 +80,37 @@ void getAllTeams(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLogin
 
 	auto result = nanodbc::execute(getTeam);
 
+
+	nanodbc::statement countColums(conn);
+
+	nanodbc::prepare(countColums, R"(
+		SELECT COUNT(*)
+		FROM Teams
+	)");
+
+	auto result2 = nanodbc::execute(countColums);
+	result2.next();
+	int colums = result2.get<int>(0);
+	
+	int* test = new int[colums];
+	int counter = 0;
+	bool isTrue = true;
+
 	std::cout << "\n";
 	while (result.next())
 	{
+		int dbIsDelete = result.get<int>(6);
+		test[counter] = dbIsDelete;
+		counter++;
 		printOneTeam(conn, result);
-		std::cout << "\n";
 	}
+	for (int i = 0; i < counter; i++)
+		if (test[i] == 0)
+			isTrue = false;
+	if (isTrue)
+		std::cout << "\n ERROR: There are no teams in database! \n";
+	std::cout << "\n";
+	delete[] test;
 	system("pause");
 }
 
@@ -317,10 +342,10 @@ void createTeam(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginU
 	system("cls");
 	int numberOfUser;
 	int copyOfNumberOfUser;
-	int insertUserAlready[1000] = { 0,0,0,0,0 };
 	int counter = -1;
 	std::cout << "Choose how many users you want to assign in that team: ";
 	std::cin >> numberOfUser;
+	int *insertUserAlready= new int[numberOfUser];
 	copyOfNumberOfUser = numberOfUser;
 
 
@@ -331,6 +356,7 @@ void createTeam(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginU
 		std::cout << "If you want to exit, enter -3 in id\n";
 		std::cout << "\nChoose user by id: ";
 		int idOfUser = getUserById(conn, idOfLoginUser, RoleOfLoginUser);
+
 		for (int i = 0; i < copyOfNumberOfUser; i++)
 		{
 			if (insertUserAlready[i] == idOfUser)
@@ -338,7 +364,6 @@ void createTeam(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginU
 				std::cout << "\n !ERROR: You already enter this id!\n";
 				idOfUser = -4;
 			}
-
 		}
 		
 		if (idOfUser == -1) {
@@ -355,7 +380,9 @@ void createTeam(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginU
 			insertAssignUser(conn, idOfTeam, idOfUser, numberOfUser, insertUserAlready, counter);
 		}
 	}
-	std::cout << "\nCreate and insert user successfully :)\n";
+	delete[] insertUserAlready;
+	std::cout << "\n\n Create and insert user successfully :) \n\n";
+	system("pause");
 }
 
 void insertAssignUser(nanodbc::connection conn, int idOfTeam , int idOfUser, int& numberOfUser, int insertUserAlready[1000], int& counter) {
@@ -381,7 +408,7 @@ void insertAssignUser(nanodbc::connection conn, int idOfTeam , int idOfUser, int
 		numberOfUser--;
 		++counter;
 		insertUserAlready[counter] = idOfUser;
-		std::cout << "\nInsert successfully :)\n\n";
+		std::cout << "\n\n Insert successfully :) \n\n";
 		system("pause");
 		break;
 	}

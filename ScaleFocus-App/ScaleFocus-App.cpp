@@ -50,8 +50,6 @@ int main() try
 	}
 
 
-
-
 	int IdOfLoginUser;
 	bool RoleOfLoginUser;
 	LogMenu(conn, IdOfLoginUser, RoleOfLoginUser);
