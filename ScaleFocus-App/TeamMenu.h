@@ -25,6 +25,14 @@ int printUserAssignInTeam(nanodbc::connection conn, nanodbc::result& result);
 
 void createTeam(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser);
 
-void insertAssignUser(nanodbc::connection conn, int idOfTeam, int idOfUser, int& numberOfUser, int insertUserAlready[], int& counter);
+void insertAssignUser(nanodbc::connection conn, int idOfTeam, int idOfUser, int& numberOfUser, int insertUserAlready[], int& counter, int& idOfLoginUser, bool& RoleOfLoginUser);
 
 void editTeamTitle(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser);
+
+void addUserInTeam(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser);
+
+void removeUserFromTeam(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser);
+
+void removeAssignUser(nanodbc::connection conn, int idOfTeam, int idOfUser, int& numberOfUser, int insertUserAlready[], int& counter, int& idOfLoginUser, bool& RoleOfLoginUser);
+
+void deleteTeam(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser);

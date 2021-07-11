@@ -17,6 +17,9 @@ void subTeamMenu(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLogin
 			break;
 		case '3':
 			subEditTeamMenu(conn, idOfLoginUser, RoleOfLoginUser);
+		case '4':
+			deleteTeam(conn, idOfLoginUser, RoleOfLoginUser);
+			break;
 		case 27:
 			isTrue = false;
 			adminMenu(conn, idOfLoginUser, RoleOfLoginUser);
@@ -77,6 +80,10 @@ void subEditTeamMenu(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfL
 			editTeamTitle(conn, idOfLoginUser, RoleOfLoginUser);
 			break;
 		case '2': 
+			addUserInTeam(conn, idOfLoginUser, RoleOfLoginUser);
+			break;
+		case '3':
+			removeUserFromTeam(conn, idOfLoginUser, RoleOfLoginUser);
 			break;
 		case 27:
 			isTrue = false;
@@ -193,6 +200,144 @@ void editTeamTitle(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLog
 		break;
 	default:
 		subEditTeamMenu(conn, idOfLoginUser, RoleOfLoginUser);
+		break;
+	}
+}
+
+void addUserInTeam(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser) {
+	int idOfTeam, idOfUser;
+	std::cout << "\nChoose id of team which you want to add user: ";
+	idOfTeam = getTeamById(conn, idOfLoginUser, RoleOfLoginUser);
+	if (idOfTeam == -1) {
+		std::cout << "\n ERROR: Not found id!\n";
+		system("pause");
+		return;
+	}
+	else if (idOfTeam == -2)
+	{
+		system("pause");
+		return;
+	}
+	std::cout << "\nIs that correct team you want to add user(y/n)";
+	switch (_getch())
+	{
+	case 'y':
+	case 'Y': {
+		system("cls");
+		int numberOfUser;
+		int copyOfNumberOfUser;
+		int counter = -1;
+		std::cout << "Choose how many users you want to assign in that team: ";
+		std::cin >> numberOfUser;
+		int* insertUserAlready = new int[numberOfUser];
+		copyOfNumberOfUser = numberOfUser;
+
+		while (numberOfUser > 0)
+		{
+			system("cls");
+			std::cout << "You need to add: " << numberOfUser << " more user\n";
+			std::cout << "If you want to exit, enter -3 in id\n";
+			std::cout << "\nChoose user by id: ";
+			int idOfUser = getUserById(conn, idOfLoginUser, RoleOfLoginUser);
+
+			for (int i = 0; i < copyOfNumberOfUser; i++)
+			{
+				if (insertUserAlready[i] == idOfUser)
+				{
+					std::cout << "\n !ERROR: You already enter this id!\n";
+					idOfUser = -4;
+				}
+			}
+
+			if (idOfUser == -1) {
+				std::cout << "\n ERROR: Not found id!\n";
+				system("pause");
+			}
+			else if (idOfUser == -2)
+				system("pause");
+			else if (idOfUser == -3)
+				break;
+			else if (idOfUser == -4)
+				system("pause");
+			else {
+				insertAssignUser(conn, idOfTeam, idOfUser, numberOfUser, insertUserAlready, counter, idOfLoginUser, RoleOfLoginUser);
+			}
+		}
+		delete[] insertUserAlready;
+
+		break;
+	}
+	default:
+		break;
+	}
+
+
+}
+
+void removeUserFromTeam(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser) {
+	int idOfTeam, idOfUser;
+	std::cout << "\nChoose id of team which you want to remove user: ";
+	idOfTeam = getTeamById(conn, idOfLoginUser, RoleOfLoginUser);
+	if (idOfTeam == -1) {
+		std::cout << "\n ERROR: Not found id!\n";
+		system("pause");
+		return;
+	}
+	else if (idOfTeam == -2)
+	{
+		system("pause");
+		return;
+	}
+	std::cout << "\nIs that correct team you want to remove user(y/n)";
+	switch (_getch())
+	{
+	case 'y':
+	case 'Y': {
+		system("cls");
+		int numberOfUser;
+		int copyOfNumberOfUser;
+		int counter = -1;
+		std::cout << "Choose how many users you want to remove in that team: ";
+		std::cin >> numberOfUser;
+		int* insertUserAlready = new int[numberOfUser];
+		copyOfNumberOfUser = numberOfUser;
+
+		while (numberOfUser > 0)
+		{
+			system("cls");
+			std::cout << "You need to remove: " << numberOfUser << " more user\n";
+			std::cout << "If you want to exit, enter -3 in id\n";
+			std::cout << "\nChoose user by id: ";
+			int idOfUser = getUserById(conn, idOfLoginUser, RoleOfLoginUser);
+
+			for (int i = 0; i < copyOfNumberOfUser; i++)
+			{
+				if (insertUserAlready[i] == idOfUser)
+				{
+					std::cout << "\n !ERROR: You already enter this id!\n";
+					idOfUser = -4;
+				}
+			}
+
+			if (idOfUser == -1) {
+				std::cout << "\n ERROR: Not found id!\n";
+				system("pause");
+			}
+			else if (idOfUser == -2)
+				system("pause");
+			else if (idOfUser == -3)
+				break;
+			else if (idOfUser == -4)
+				system("pause");
+			else {
+				removeAssignUser(conn, idOfTeam, idOfUser, numberOfUser, insertUserAlready, counter, idOfLoginUser, RoleOfLoginUser);
+			}
+		}
+		delete[] insertUserAlready;
+
+		break;
+	}
+	default:
 		break;
 	}
 }
@@ -460,7 +605,7 @@ void createTeam(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginU
 		else if (idOfUser == -4)
 			system("pause");
 		else{
-			insertAssignUser(conn, idOfTeam, idOfUser, numberOfUser, insertUserAlready, counter);
+			insertAssignUser(conn, idOfTeam, idOfUser, numberOfUser, insertUserAlready, counter, idOfLoginUser, RoleOfLoginUser);
 		}
 	}
 	delete[] insertUserAlready;
@@ -468,7 +613,7 @@ void createTeam(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginU
 	system("pause");
 }
 
-void insertAssignUser(nanodbc::connection conn, int idOfTeam , int idOfUser, int& numberOfUser, int insertUserAlready[], int& counter) {
+void insertAssignUser(nanodbc::connection conn, int idOfTeam , int idOfUser, int& numberOfUser, int insertUserAlready[], int& counter, int& idOfLoginUser, bool& RoleOfLoginUser) {
 
 	std::cout << "\nIs that correct user you want to add in team(y/n)";
 	switch (_getch())
@@ -492,6 +637,21 @@ void insertAssignUser(nanodbc::connection conn, int idOfTeam , int idOfUser, int
 		++counter;
 		insertUserAlready[counter] = idOfUser;
 		std::cout << "\n\n Insert successfully :) \n\n";
+		nanodbc::statement updateDB(conn);
+		nanodbc::prepare(updateDB, R"(
+			UPDATE Teams
+			SET
+			IdOfUserLastChange = ?
+			,DateOfLastChange = GETDATE()
+			WHERE Id = ?;
+			
+		)");
+
+		updateDB.bind(0, &idOfLoginUser);
+		updateDB.bind(1, &idOfTeam);
+
+		nanodbc::execute(updateDB);
+
 		system("pause");
 		break;
 	}
@@ -499,4 +659,95 @@ void insertAssignUser(nanodbc::connection conn, int idOfTeam , int idOfUser, int
 		break;
 	}
 
+}
+
+void removeAssignUser(nanodbc::connection conn, int idOfTeam, int idOfUser, int& numberOfUser, int insertUserAlready[], int& counter, int& idOfLoginUser, bool& RoleOfLoginUser) {
+	std::cout << "\nIs that correct user you want to remove from team(y/n)";
+	switch (_getch())
+	{
+	case 'y':
+	case 'Y': {
+		nanodbc::statement removeUserInTeam(conn);
+
+		nanodbc::prepare(removeUserInTeam, R"(
+			DELETE FROM UsersTeams
+			WHERE IdOfUser = ? and IdOfTeam = ?
+		)");
+
+		removeUserInTeam.bind(0, &idOfUser);
+		removeUserInTeam.bind(1, &idOfTeam);
+
+		nanodbc::execute(removeUserInTeam);
+		numberOfUser--;
+		++counter;
+		insertUserAlready[counter] = idOfUser;
+		std::cout << "\n\n Remove user successfully :) \n\n";
+		nanodbc::statement updateDB(conn);
+		nanodbc::prepare(updateDB, R"(
+			UPDATE Teams
+			SET
+			IdOfUserLastChange = ?
+			,DateOfLastChange = GETDATE()
+			WHERE Id = ?;
+			
+		)");
+
+		updateDB.bind(0, &idOfLoginUser);
+		updateDB.bind(1, &idOfTeam);
+
+		nanodbc::execute(updateDB);
+
+		system("pause");
+		break;
+	}
+	default:
+		break;
+	}
+}
+
+void deleteTeam(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser) {
+	int idOfTeam;
+	std::cout << "\nChoose id of team which you want to remove from database: ";
+	idOfTeam = getTeamById(conn, idOfLoginUser, RoleOfLoginUser);
+	if (idOfTeam == -1) {
+		std::cout << "\n ERROR: Not found id!\n";
+		system("pause");
+		return;
+	}
+	else if (idOfTeam == -2)
+	{
+		system("pause");
+		return;
+	}
+	std::cout << "\nIs that correct team you want remove from database(y/n)";
+	switch (_getch())
+	{
+	case 'y':
+	case 'Y':{
+		nanodbc::statement deleteTeam(conn);
+		nanodbc::prepare(deleteTeam, R"(
+			UPDATE Teams
+			SET
+			IsDeleted = 1
+			WHERE Id = ?
+		)");
+		deleteTeam.bind(0, &idOfTeam);
+		auto  result = nanodbc::execute(deleteTeam);
+
+		if (result.affected_rows() == 1)
+		{
+			std::cout << "\n Remove team successfully :) \n";
+			system("pause");
+		}
+		else
+		{
+			std::cout << "\n ERROR: In remove team \n";
+			system("pause");
+			subTeamMenu(conn, idOfLoginUser, RoleOfLoginUser);
+		}
+		break;
+	}
+	default:
+		break;
+	}
 }
