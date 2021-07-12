@@ -5,7 +5,7 @@ void adminMenu(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUs
 	while (isTrue)
 	{
 		system("cls");
-		std::cout << "---Admin Menu---\n1. Users Management\n2. Teams Management\n3. Projects Management\nEsc. To logout\n";
+		std::cout << "---Admin Menu---\n1. Users Management\n2. Teams Management\n3. Projects and Task Management\nEsc. To logout\n";
 		switch (_getch())
 		{
 		case '1':
@@ -13,6 +13,9 @@ void adminMenu(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUs
 			break;
 		case '2':
 			subTeamMenu(conn, idOfLoginUser, RoleOfLoginUser);
+			break;
+		case '3':
+			subProjectMenu(conn, idOfLoginUser, RoleOfLoginUser);
 			break;
 		case 27:
 			isTrue = false;

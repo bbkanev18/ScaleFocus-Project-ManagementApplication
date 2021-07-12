@@ -17,6 +17,7 @@ void subTeamMenu(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLogin
 			break;
 		case '3':
 			subEditTeamMenu(conn, idOfLoginUser, RoleOfLoginUser);
+			break;
 		case '4':
 			deleteTeam(conn, idOfLoginUser, RoleOfLoginUser);
 			break;
