@@ -1,12 +1,12 @@
 USE [master]
 GO
-/****** Object:  Database [ScaleFocus-AppDB]    Script Date: 7/11/2021 1:08:11 PM ******/
+/****** Object:  Database [ScaleFocus-AppDB]    Script Date: 7/12/2021 2:46:56 PM ******/
 CREATE DATABASE [ScaleFocus-AppDB]
  CONTAINMENT = NONE
  ON  PRIMARY 
-( NAME = N'ScaleFocus-AppDB', FILENAME = N'C:\Users\user\ScaleFocus-AppDB.mdf' , SIZE = 8192KB , MAXSIZE = UNLIMITED, FILEGROWTH = 65536KB )
+( NAME = N'ScaleFocus-AppDB', FILENAME = N'C:\Users\Biser\ScaleFocus-AppDB.mdf' , SIZE = 8192KB , MAXSIZE = UNLIMITED, FILEGROWTH = 65536KB )
  LOG ON 
-( NAME = N'ScaleFocus-AppDB_log', FILENAME = N'C:\Users\user\ScaleFocus-AppDB_log.ldf' , SIZE = 8192KB , MAXSIZE = 2048GB , FILEGROWTH = 65536KB )
+( NAME = N'ScaleFocus-AppDB_log', FILENAME = N'C:\Users\Biser\ScaleFocus-AppDB_log.ldf' , SIZE = 8192KB , MAXSIZE = 2048GB , FILEGROWTH = 65536KB )
 GO
 IF (1 = FULLTEXTSERVICEPROPERTY('IsFullTextInstalled'))
 begin
@@ -73,32 +73,34 @@ ALTER DATABASE [ScaleFocus-AppDB] SET DELAYED_DURABILITY = DISABLED
 GO
 USE [ScaleFocus-AppDB]
 GO
-/****** Object:  Table [dbo].[Project]    Script Date: 7/11/2021 1:08:11 PM ******/
+/****** Object:  Table [dbo].[Projects]    Script Date: 7/12/2021 2:46:56 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[Project](
+CREATE TABLE [dbo].[Projects](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[Title] [nvarchar](255) NOT NULL,
 	[Description] [nvarchar](255) NOT NULL,
 	[DateOfCreation] [datetime] NOT NULL,
 	[IdOfCreator] [int] NOT NULL,
 	[DateOfLastChange] [datetime] NOT NULL,
-	[IdOfTheUserLastChange] [int] NOT NULL,
+	[IdOfUserLastChange] [int] NOT NULL,
+	[IdTeam] [int] NOT NULL,
+	[IsDeleted] [int] NOT NULL,
  CONSTRAINT [PK_Project] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Task]    Script Date: 7/11/2021 1:08:11 PM ******/
+/****** Object:  Table [dbo].[Tasks]    Script Date: 7/12/2021 2:46:56 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[Task](
-	[Id] [int] NOT NULL,
+CREATE TABLE [dbo].[Tasks](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[IdOfProject] [int] NOT NULL,
 	[IdOfAssignee] [int] NOT NULL,
 	[Title] [nvarchar](255) NOT NULL,
@@ -108,13 +110,14 @@ CREATE TABLE [dbo].[Task](
 	[IdOfCreator] [int] NOT NULL,
 	[DateOfLastChange] [datetime] NOT NULL,
 	[IdOfTheUserLastChange] [int] NOT NULL,
+	[IsDeleted] [int] NOT NULL,
  CONSTRAINT [PK_Task] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Teams]    Script Date: 7/11/2021 1:08:11 PM ******/
+/****** Object:  Table [dbo].[Teams]    Script Date: 7/12/2021 2:46:56 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -133,7 +136,7 @@ CREATE TABLE [dbo].[Teams](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Users]    Script Date: 7/11/2021 1:08:11 PM ******/
+/****** Object:  Table [dbo].[Users]    Script Date: 7/12/2021 2:46:56 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -156,7 +159,7 @@ CREATE TABLE [dbo].[Users](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[UsersTeams]    Script Date: 7/11/2021 1:08:11 PM ******/
+/****** Object:  Table [dbo].[UsersTeams]    Script Date: 7/12/2021 2:46:56 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -166,7 +169,7 @@ CREATE TABLE [dbo].[UsersTeams](
 	[IdOfTeam] [int] NOT NULL
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Work_Log]    Script Date: 7/11/2021 1:08:11 PM ******/
+/****** Object:  Table [dbo].[Work_Log]    Script Date: 7/12/2021 2:46:56 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -183,13 +186,13 @@ CREATE TABLE [dbo].[Work_Log](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-ALTER TABLE [dbo].[Project] ADD  CONSTRAINT [DF_Project_DateOfCreation]  DEFAULT (getdate()) FOR [DateOfCreation]
+ALTER TABLE [dbo].[Projects] ADD  CONSTRAINT [DF_Project_DateOfCreation]  DEFAULT (getdate()) FOR [DateOfCreation]
 GO
-ALTER TABLE [dbo].[Project] ADD  CONSTRAINT [DF_Project_DateOfLastChange]  DEFAULT (getdate()) FOR [DateOfLastChange]
+ALTER TABLE [dbo].[Projects] ADD  CONSTRAINT [DF_Project_DateOfLastChange]  DEFAULT (getdate()) FOR [DateOfLastChange]
 GO
-ALTER TABLE [dbo].[Task] ADD  CONSTRAINT [DF_Task_DateOfCreation]  DEFAULT (getdate()) FOR [DateOfCreation]
+ALTER TABLE [dbo].[Tasks] ADD  CONSTRAINT [DF_Task_DateOfCreation]  DEFAULT (getdate()) FOR [DateOfCreation]
 GO
-ALTER TABLE [dbo].[Task] ADD  CONSTRAINT [DF_Task_DateOfLastChange]  DEFAULT (getdate()) FOR [DateOfLastChange]
+ALTER TABLE [dbo].[Tasks] ADD  CONSTRAINT [DF_Task_DateOfLastChange]  DEFAULT (getdate()) FOR [DateOfLastChange]
 GO
 ALTER TABLE [dbo].[Teams] ADD  CONSTRAINT [DF_Teams_DateOfCreation]  DEFAULT (getdate()) FOR [DateOfCreation]
 GO
@@ -201,35 +204,40 @@ ALTER TABLE [dbo].[Users] ADD  CONSTRAINT [DF_Users_DateOfLastChange]  DEFAULT (
 GO
 ALTER TABLE [dbo].[Work_Log] ADD  CONSTRAINT [DF_Work_Log_Date]  DEFAULT (getdate()) FOR [Date]
 GO
-ALTER TABLE [dbo].[Project]  WITH CHECK ADD  CONSTRAINT [FK_Project_Users_Creator] FOREIGN KEY([IdOfCreator])
+ALTER TABLE [dbo].[Projects]  WITH CHECK ADD  CONSTRAINT [FK_Project_Teams] FOREIGN KEY([IdTeam])
+REFERENCES [dbo].[Teams] ([Id])
+GO
+ALTER TABLE [dbo].[Projects] CHECK CONSTRAINT [FK_Project_Teams]
+GO
+ALTER TABLE [dbo].[Projects]  WITH CHECK ADD  CONSTRAINT [FK_Project_Users_Creator] FOREIGN KEY([IdOfCreator])
 REFERENCES [dbo].[Users] ([Id])
 GO
-ALTER TABLE [dbo].[Project] CHECK CONSTRAINT [FK_Project_Users_Creator]
+ALTER TABLE [dbo].[Projects] CHECK CONSTRAINT [FK_Project_Users_Creator]
 GO
-ALTER TABLE [dbo].[Project]  WITH CHECK ADD  CONSTRAINT [FK_Project_Users_Last_Edit] FOREIGN KEY([IdOfTheUserLastChange])
+ALTER TABLE [dbo].[Projects]  WITH CHECK ADD  CONSTRAINT [FK_Project_Users_Last_Edit] FOREIGN KEY([IdOfUserLastChange])
 REFERENCES [dbo].[Users] ([Id])
 GO
-ALTER TABLE [dbo].[Project] CHECK CONSTRAINT [FK_Project_Users_Last_Edit]
+ALTER TABLE [dbo].[Projects] CHECK CONSTRAINT [FK_Project_Users_Last_Edit]
 GO
-ALTER TABLE [dbo].[Task]  WITH NOCHECK ADD  CONSTRAINT [FK_Task_Project] FOREIGN KEY([Id])
-REFERENCES [dbo].[Project] ([Id])
+ALTER TABLE [dbo].[Tasks]  WITH NOCHECK ADD  CONSTRAINT [FK_Task_Project] FOREIGN KEY([Id])
+REFERENCES [dbo].[Projects] ([Id])
 GO
-ALTER TABLE [dbo].[Task] CHECK CONSTRAINT [FK_Task_Project]
+ALTER TABLE [dbo].[Tasks] CHECK CONSTRAINT [FK_Task_Project]
 GO
-ALTER TABLE [dbo].[Task]  WITH CHECK ADD  CONSTRAINT [FK_Task_Users_Assignee] FOREIGN KEY([IdOfAssignee])
+ALTER TABLE [dbo].[Tasks]  WITH CHECK ADD  CONSTRAINT [FK_Task_Users_Assignee] FOREIGN KEY([IdOfAssignee])
 REFERENCES [dbo].[Users] ([Id])
 GO
-ALTER TABLE [dbo].[Task] CHECK CONSTRAINT [FK_Task_Users_Assignee]
+ALTER TABLE [dbo].[Tasks] CHECK CONSTRAINT [FK_Task_Users_Assignee]
 GO
-ALTER TABLE [dbo].[Task]  WITH CHECK ADD  CONSTRAINT [FK_Task_Users_Creator] FOREIGN KEY([IdOfCreator])
+ALTER TABLE [dbo].[Tasks]  WITH CHECK ADD  CONSTRAINT [FK_Task_Users_Creator] FOREIGN KEY([IdOfCreator])
 REFERENCES [dbo].[Users] ([Id])
 GO
-ALTER TABLE [dbo].[Task] CHECK CONSTRAINT [FK_Task_Users_Creator]
+ALTER TABLE [dbo].[Tasks] CHECK CONSTRAINT [FK_Task_Users_Creator]
 GO
-ALTER TABLE [dbo].[Task]  WITH CHECK ADD  CONSTRAINT [FK_Task_Users_Last_Edit] FOREIGN KEY([IdOfTheUserLastChange])
+ALTER TABLE [dbo].[Tasks]  WITH CHECK ADD  CONSTRAINT [FK_Task_Users_Last_Edit] FOREIGN KEY([IdOfTheUserLastChange])
 REFERENCES [dbo].[Users] ([Id])
 GO
-ALTER TABLE [dbo].[Task] CHECK CONSTRAINT [FK_Task_Users_Last_Edit]
+ALTER TABLE [dbo].[Tasks] CHECK CONSTRAINT [FK_Task_Users_Last_Edit]
 GO
 ALTER TABLE [dbo].[Teams]  WITH CHECK ADD  CONSTRAINT [FK_Teams_Users_Creator] FOREIGN KEY([IdOfCreator])
 REFERENCES [dbo].[Users] ([Id])
@@ -262,7 +270,7 @@ GO
 ALTER TABLE [dbo].[UsersTeams] CHECK CONSTRAINT [FK_UsersTeams_Users]
 GO
 ALTER TABLE [dbo].[Work_Log]  WITH CHECK ADD  CONSTRAINT [FK_Work_Log_Task] FOREIGN KEY([IdOfTask])
-REFERENCES [dbo].[Task] ([Id])
+REFERENCES [dbo].[Tasks] ([Id])
 GO
 ALTER TABLE [dbo].[Work_Log] CHECK CONSTRAINT [FK_Work_Log_Task]
 GO
