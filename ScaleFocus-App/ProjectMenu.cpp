@@ -11,12 +11,24 @@ void subProjectMenu(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLo
 		case '1':
 			subPrintProjectMenu(conn, idOfLoginUser, RoleOfLoginUser);
 			break;
-		case '2':
+		case '2': {
+			std::cout << "\n         Coming soon \n";
+			std::cout << " Create menu is not available now \n\n";
+			system("pause");
 			break;
-		case '3':
+		}
+		case '3': {
+			std::cout << "\n         Coming soon \n";
+			std::cout << " Edit menu is not available now \n\n";
+			system("pause");
 			break;
-		case '4':
+		}
+		case '4': {
+			std::cout << "\n         Coming soon \n";
+			std::cout << " Delete menu is not available now \n\n";
+			system("pause");
 			break;
+		}
 		case 27:
 			isTrue = false;
 			adminMenu(conn, idOfLoginUser, RoleOfLoginUser);
@@ -38,8 +50,12 @@ void subPrintProjectMenu(nanodbc::connection conn, int& idOfLoginUser, bool& Rol
 		case '1':
 			printAllProject(conn, idOfLoginUser, RoleOfLoginUser);
 			break;
-		case '2':
+		case '2': {
+			std::cout << "\n              Coming soon \n";
+			std::cout << " Pirnt project by id is not available now \n\n";
+			system("pause");
 			break;
+		}
 		case 27:
 			isTrue = false;
 			subProjectMenu(conn, idOfLoginUser, RoleOfLoginUser);

@@ -58,6 +58,13 @@ void LogMenu(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser
 
 		if (RoleOfLoginUser == 1)
 			adminMenu(conn, idOfLoginUser, RoleOfLoginUser);
+		else {
+			system("cls");
+			std::cout << "\n           Coming soon \n";
+			std::cout << " The user menu is not available now \n\n";
+			system("pause");
+		}
+
 		return ;
 	}
 	if (CheckUserInputForUserName(UserName, conn, idOfLoginUser, RoleOfLoginUser) == 0)
