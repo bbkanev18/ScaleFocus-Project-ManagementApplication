@@ -1,10 +1,5 @@
 #include "AdminMenu.h"
 
-// Main Admin menu contain:
-// -> User Management
-// -> Team Management
-// -> Projects and Task Management
-// -> Work log
 void adminMenu(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser) {
 	// Breake while and back to login menu
 	bool isTrue = true;
@@ -40,11 +35,6 @@ void adminMenu(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUs
 	}
 }
 
-// User management menu contain:
-// -> Print user
-// -> Create user
-// -> Edit user
-// -> Delete user
 void subAdminUserMenu(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser) {
 	// Breake while and back to admin menu
 	bool isTrue = true;
@@ -75,11 +65,6 @@ void subAdminUserMenu(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOf
 	}
 }
 
-// Edit menu contain:
-// -> Chenge username
-// -> Chenge password
-// -> Chenge firstname
-// -> Chenge lastname
 void subEditMenu(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser) {
 	// Breake while and back to user menu
 	bool isTrue = true;
@@ -112,9 +97,6 @@ void subEditMenu(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLogin
 	}
 }
 
-// Print menu contain:
-// -> print all users
-// -> print user by id
 void subMenuListUser(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser) {
 	// Breake while and back to user menu
 	bool isTrue = true;
@@ -158,9 +140,6 @@ void subMenuListUser(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfL
 	}
 }
 
-// Delete menu contain:
-// -> Delete user by id
-// -> Delete all user (delete all user in db and back default admin)
 void subDeleteMenu(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser) {
 	// Breake while and back to user menu
 	bool isTrue = true;
@@ -188,7 +167,6 @@ void subDeleteMenu(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLog
 	}
 }
 
-// Delete user by id
 void deleteOneUser(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser) {
 	std::cout << "\nChoose user by id to delete: ";
 	
@@ -267,7 +245,6 @@ void deleteOneUser(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLog
 	}
 }
 
-// Delete all user and reset defauld user
 void delteAllUsers(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser) {
 	std::cout << "\nAre you sure?\n";
 	std::cout << "y/n: ";
@@ -310,11 +287,6 @@ void delteAllUsers(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLog
 
 }
 
-// Reseting default admin if there are changes in:
-// -> Username
-// -> Password
-// -> Firstname
-// -> Lastname
 void resetDefaultAdmin(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser) 
 {
 	// Make statement called resetAdmin
@@ -345,7 +317,6 @@ void resetDefaultAdmin(nanodbc::connection conn, int& idOfLoginUser, bool& RoleO
 	system("pause");
 }
 
-// Editn username
 void editUserName(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser) {
 	std::string newUseName;
 
@@ -427,7 +398,6 @@ void editUserName(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLogi
 	}
 }
 
-// Edit password
 void editPassword(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser) {
 	std::string newPassword;
 
@@ -510,7 +480,6 @@ void editPassword(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLogi
 	}
 }
 
-// Edit firstname
 void editFirstName(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser) {
 	std::string newFirstName;
 
@@ -518,8 +487,8 @@ void editFirstName(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLog
 
 	// Getting id from function and if fail give feedback by id
 	int id = getUserById(conn, idOfLoginUser, RoleOfLoginUser);
-
-	// If function return -2 is mean you enter character in integer
+	
+	// If function return -1 is mean id cannot found
 	if (id == -1) {
 		std::cout << "\n ERROR: Not found id!\n";
 		system("pause");
@@ -535,6 +504,7 @@ void editFirstName(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLog
 	// Use _getch to get user choise
 	switch (_getch())
 	{
+	// y -> yes
 	case 'y':
 	case 'Y':
 	{
@@ -542,6 +512,7 @@ void editFirstName(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLog
 		std::cin >> newFirstName;
 		// Creating new statement called changeOldUserName
 		nanodbc::statement changeOldUserName(conn);
+		// Make new query to db
 		nanodbc::prepare(changeOldUserName, R"(
 			UPDATE Users
 			SET
@@ -554,11 +525,17 @@ void editFirstName(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLog
 		// Convert normal string to nanodbc string
 		nanodbc::string nwFN = newFirstName;
 
+		// Bind first '?' with new firstname
 		changeOldUserName.bind(0, nwFN.c_str());
+		// Bind sencond '?' with id of login user
 		changeOldUserName.bind(1, &idOfLoginUser);
+		// Bind third '?' with id of user
 		changeOldUserName.bind(2, &id);
+
+		// Execute query
 		auto result = nanodbc::execute(changeOldUserName);
 
+		// If there is one affected row print 'Change successfully'
 		if (result.affected_rows() == 1)
 			std::cout << "\nChange successfully :)\n";
 		else
@@ -570,6 +547,7 @@ void editFirstName(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLog
 		system("pause");
 		break;
 	}
+	// n -> no
 	case 'n':
 	case 'N':
 		subEditMenu(conn, idOfLoginUser, RoleOfLoginUser);
@@ -584,26 +562,35 @@ void editLastName(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLogi
 	std::string newLastName;
 	
 	std::cout << "\nChoose user by id to editing lastname: ";
+
+	// Getting id from function and if fail give feedback by id
 	int id = getUserById(conn, idOfLoginUser, RoleOfLoginUser);
+	
+	// If function return -1 is mean id cannot found
 	if (id == -1) {
 		std::cout << "\n ERROR: Not found id!\n";
 		system("pause");
 		return;
 	}
+	// If function return -2 is mean you enter character in integer
 	else if (id == -2)
 	{
 		system("pause");
 		return;
 	}
 	std::cout << "\nIs that correct user you want to edit(y/n)";
+	// Use _getch to get user choise
 	switch (_getch())
 	{
+	// y -> yes
 	case 'y':
 	case 'Y':
 	{
 		std::cout << "\n\nChoose new lastname: ";
 		std::cin >> newLastName;
+		// Creating new statement called changeOldUserName
 		nanodbc::statement changeOldUserName(conn);
+		// Make new query to db
 		nanodbc::prepare(changeOldUserName, R"(
 			UPDATE Users
 			SET
@@ -613,13 +600,20 @@ void editLastName(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLogi
 			WHERE Id = ?;
 		)");
 
+		// Convert normal string to nanodbc string
 		nanodbc::string nwLN = newLastName;
 
+		// Bind first '?' with new lastname
 		changeOldUserName.bind(0, nwLN.c_str());
+		// Bind second '?' with id of login user
 		changeOldUserName.bind(1, &idOfLoginUser);
+		// Bind third '?' with id of user
 		changeOldUserName.bind(2, &id);
+
+		// Execute query
 		auto result = nanodbc::execute(changeOldUserName);
 
+		// If there is one affected row print 'Change successfully'
 		if (result.affected_rows() == 1)
 			std::cout << "\nChange successfully :)\n";
 		else
@@ -645,18 +639,24 @@ int getUserById(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginU
 	int id;
 
 	std::cin >> id;
+	// If you enter letter in integer
 	if (std::cin.fail())
 	{
+		// clear all error flags
 		std::cin.clear();
+		// ignore INT_MAX symbols when you press enter
 		std::cin.ignore(INT_MAX, '\n');
 		std::cout << "\n ERROR: wrong integer value \n";
 		return -2;
 	}
+	// To exit from assigning user in team
 	if (id == -3)
 		return -3;
 
+	// Creating statement findUser
 	nanodbc::statement findUser(conn);
 
+	// Make query to db
 	nanodbc::prepare(findUser, R"(
 		SELECT 
 			Id, UserName, Password, FirstName, LastName, 
@@ -666,10 +666,13 @@ int getUserById(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginU
 		WHERE Id = ?
 	)");
 
+	// Bind first '?' with id of user you choise
 	findUser.bind(0, &id);
 
+	// Execute query
 	auto result = nanodbc::execute(findUser);
 
+	// Check is there somthing db and printed
 	if (result.next()){
 		return printUser(conn, result);
 	}
@@ -690,6 +693,7 @@ void createUser(nanodbc::connection conn, int& idOfLoginUser,bool& RoleOfLoginUs
 	std::cin >> UserName;
 	std::cout << "Choose password: ";
 	std::cin >> Password;
+	// encrypting password sha256
 	std::string encrypterdPassword = sha256(Password);
 	std::cout << "Choose firstname: ";
 	std::cin >> FirstName;
@@ -697,10 +701,12 @@ void createUser(nanodbc::connection conn, int& idOfLoginUser,bool& RoleOfLoginUs
 	std::cin >> LastName;
 	std::cout << "Role (1 - administrator, 0 - user): ";
 	std::cin >> role;
+	// Convert bool in integer
 	int getRole = role;
 
+	// Create statment creatingNewUser
 	nanodbc::statement creatingNewUser(conn);
-
+	// Create new query to insert user
 	nanodbc::prepare(creatingNewUser, R"(
 		INSERT INTO Users (
 		UserName, Password, FirstName, LastName, Role
@@ -709,6 +715,7 @@ void createUser(nanodbc::connection conn, int& idOfLoginUser,bool& RoleOfLoginUs
 		(?, ?, ?, ?, ?, ?, ?, ?);
 	)");
 
+	// Binding all user input
 	creatingNewUser.bind(0, UserName.c_str());
 	creatingNewUser.bind(1, encrypterdPassword.c_str());
 	creatingNewUser.bind(2, FirstName.c_str());
@@ -718,6 +725,7 @@ void createUser(nanodbc::connection conn, int& idOfLoginUser,bool& RoleOfLoginUs
 	creatingNewUser.bind(6, &idOfLoginUser);
 	creatingNewUser.bind(7, &IsDeleted);
 
+	// Execute query
 	nanodbc::execute(creatingNewUser);
 	std::cout << "\nCreate successfully :)\n\n";
 	system("pause");
@@ -725,8 +733,10 @@ void createUser(nanodbc::connection conn, int& idOfLoginUser,bool& RoleOfLoginUs
 }
 
 void getListOfAllUsers(nanodbc::connection conn) {
+	// Make query to select all user
 	auto result = nanodbc::execute(conn, NANODBC_TEXT("SELECT Id, UserName, Password, FirstName, LastName, DateOfCreation, Role, IdOfCreator, DateOfLastChange, IdOfUserLastChange, IsDeleted FROM Users"));
 	while (result.next())
+		// Print one user
 		printUser(conn, result);
 	system("pause");
 }
@@ -734,6 +744,7 @@ void getListOfAllUsers(nanodbc::connection conn) {
 int printUser(nanodbc::connection conn, nanodbc::result& result) 
 {
 	auto IsDeleted = result.get<int>(10);
+	// Check is the user is deleted
 	if (IsDeleted == 0)
 	{
 		std::cout << "\n======================================\n";
@@ -762,12 +773,14 @@ int printUser(nanodbc::connection conn, nanodbc::result& result)
 		if (IdOfCreator == 0)
 			std::cout << "null\n";
 		else
+			// Get id of creator and print username of creator
 			printUserNameByIdOfCreator(conn, Id);
 		std::cout << "Date of last change: " << DateOfLastChange.year << "/" << DateOfLastChange.month << "/" << DateOfLastChange.day << " " << DateOfLastChange.hour << ":" << DateOfLastChange.min << ":" << DateOfLastChange.sec << "\n";
 		std::cout << "Id of the user that did the last change: ";
 		if (IdOfUserLastChange == 0)
 			std::cout << "null\n";
-		else 
+		else
+			// Get id of last edit and print username
 			printUserNameByIdOfLastChange(conn, Id);
 		std::cout << "======================================\n";
 		std::cout << "\n";
@@ -780,59 +793,76 @@ int printUser(nanodbc::connection conn, nanodbc::result& result)
 }
 
 void printUserNameByIdOfCreator(nanodbc::connection conn, int id) {
+	// Create statement getIdOfCreator
 	nanodbc::statement getIdOfCreator(conn);
-
+	// Create new query
+	// selecting id of creator from currently id user
 	nanodbc::prepare(getIdOfCreator, R"(
 			SELECT IdOfCreator
 			FROM Users
 			WHERE Id = ?
 			)");
+	// Bind first '?' wiht id of currently printing user
 	getIdOfCreator.bind(0, &id);
-
+	// Execute query
 	auto result = nanodbc::execute(getIdOfCreator);
+	// Read result
 	result.next();
+	// Get the id of creator
 	int newId = result.get<int>(0);
 
+	// Make new query
+	// Get username of creator
 	nanodbc::prepare(getIdOfCreator, R"(
 			SELECT UserName
 			FROM Users
 			WHERE Id = ?
-			)");
-
+	)");
+	// Bind first '?' with newId
 	getIdOfCreator.bind(0, &newId);
-
+	// Execute query
 	auto result1 = nanodbc::execute(getIdOfCreator);
 
-
+	// Read result1
 	result1.next();
+	// Cout username of creator
 	std::cout << result1.get<nanodbc::string>(0) << "\n";
 }
 
 void printUserNameByIdOfLastChange(nanodbc::connection conn, int id) {
+	// Create statement getIdOfLastChange
 	nanodbc::statement getIdOfLastChange(conn);
-
+	// Make new query
+	// selecting id of last edit user from currently id user
 	nanodbc::prepare(getIdOfLastChange, R"(
 			SELECT IdOfUserLastChange
 			FROM Users
 			WHERE Id = ?
 			)");
+	// Bind first '?' wiht id of currently printing user
 	getIdOfLastChange.bind(0, &id);
 
+	// Execute query
 	auto result = nanodbc::execute(getIdOfLastChange);
+	// Read result
 	result.next();
+	// Get the id of last edit user
 	int newId = result.get<int>(0);
 
+	// Make new query
+	// Get username of last edit
 	nanodbc::prepare(getIdOfLastChange, R"(
 			SELECT UserName
 			FROM Users
 			WHERE Id = ?
-			)");
-
+		)");
+	// Bind first '?' with newId
 	getIdOfLastChange.bind(0, &newId);
-
+	// Execute query
 	auto result1 = nanodbc::execute(getIdOfLastChange);
 
-
+	// Read result1
 	result1.next();
+	// Cout username of last edit
 	std::cout << result1.get<nanodbc::string>(0) << "\n";
 }

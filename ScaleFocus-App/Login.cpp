@@ -1,6 +1,5 @@
 #include "Login.h"
 
-// Checking username is in database from user input
 bool CheckUserInputForUserName(std::string UserName, nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser) {
 	// Make query to db to get username, id and role
 	auto result = nanodbc::execute(conn, NANODBC_TEXT("SELECT Id, Role ,UserName, IsDeleted FROM Users"));
@@ -24,7 +23,6 @@ bool CheckUserInputForUserName(std::string UserName, nanodbc::connection conn, i
 	return false;
 }
 
-// Checking password is in database from user input
 bool CheckUserInputForPassword(std::string encryptedPassword, nanodbc::connection conn) {
 	// Make query to db to get password
 	auto result = nanodbc::execute(conn, NANODBC_TEXT("SELECT Password, IsDeleted FROM Users"));
