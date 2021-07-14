@@ -144,6 +144,7 @@
   <ItemGroup>
     <ClCompile Include="AdminMenu.cpp" />
     <ClCompile Include="Login.cpp" />
+    <ClCompile Include="ProjectMenu.cpp" />
     <ClCompile Include="ScaleFocus-App.cpp" />
     <ClCompile Include="ClassUser.cpp" />
     <ClCompile Include="sha256.cpp" />
@@ -152,6 +153,7 @@
   <ItemGroup>
     <ClInclude Include="AdminMenu.h" />
     <ClInclude Include="ClassUser.h" />
+    <ClInclude Include="ProjectMenu.h" />
     <ClInclude Include="sha256.h" />
     <ClInclude Include="Login.h" />
     <ClInclude Include="TeamMenu.h" />
