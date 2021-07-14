@@ -61,3 +61,7 @@ void removeAssignUser(nanodbc::connection conn, int idOfTeam, int idOfUser, int&
 
 // Delete team from db
 void deleteTeam(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser);
+
+// Checking title
+// -> already exist in database
+void checkTitleInput(nanodbc::connection conn, std::string& checkString);

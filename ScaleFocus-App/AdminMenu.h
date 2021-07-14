@@ -82,3 +82,15 @@ void printUserNameByIdOfCreator(nanodbc::connection conn, int id);
 
 // Get id of last edit user and print username
 void printUserNameByIdOfLastChange(nanodbc::connection conn, int id);
+
+// Checking username
+// -> already exist in database
+void checkUserNameInput(nanodbc::connection conn, std::string& checkString);
+
+// Checking password
+// -> must 8 character long
+// -> already exist in database
+void checkPasswordInput(nanodbc::connection conn, std::string& checkString);
+
+// Error cout name of problem and what is the proble
+void errorMassage(std::string name, std::string problem);

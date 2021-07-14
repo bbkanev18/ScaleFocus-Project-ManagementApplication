@@ -346,7 +346,7 @@ void editUserName(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLogi
 	{
 		std::cout << "\n\nChoose new username: ";
 		std::cin >> newUseName;
-		
+		checkUserNameInput(conn, newUseName);
 		// Make statement called changeOldUserName
 		nanodbc::statement changeOldUserName(conn);
 		
@@ -428,6 +428,7 @@ void editPassword(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLogi
 		std::cout << "\n\nChoose new password: ";
 		// Hiding password with '*'
 		HidePassword(newPassword);
+		checkPasswordInput(conn, newPassword);
 
 		// Creating new statement called changeOldUserName
 		nanodbc::statement changeOldUserName(conn);
@@ -690,8 +691,10 @@ void createUser(nanodbc::connection conn, int& idOfLoginUser,bool& RoleOfLoginUs
 	system("cls");
 	std::cout << "Choose username: ";
 	std::cin >> UserName;
+	checkUserNameInput(conn, UserName);
 	std::cout << "Choose password: ";
 	std::cin >> Password;
+	checkPasswordInput(conn, Password);
 	// encrypting password sha256
 	std::string encrypterdPassword = sha256(Password);
 	std::cout << "Choose firstname: ";
@@ -864,4 +867,73 @@ void printUserNameByIdOfLastChange(nanodbc::connection conn, int id) {
 	result1.next();
 	// Cout username of last edit
 	std::cout << result1.get<nanodbc::string>(0) << "\n";
+}
+
+void checkUserNameInput(nanodbc::connection conn, std::string& checkString) {
+	// Make statement checkUserName
+	nanodbc::statement checkUserName(conn);
+	// Make query to find username is already exist
+	nanodbc::prepare(checkUserName, R"(
+		SELECT Id, IsDeleted
+		FROM Users
+		WHERE UserName = ?
+	)");
+	// Bind username
+	checkUserName.bind(0, checkString.c_str());
+
+	auto result = nanodbc::execute(checkUserName);
+	if (result.next())
+	{
+		int dbIsDeleted = result.get<int>(1);
+		// Check is delete
+		if (dbIsDeleted == 0)
+		{
+			errorMassage("Username", "already exist in database");
+			std::cin >> checkString;
+			checkUserNameInput(conn, checkString);
+		}
+		std::cout << "\n";
+	}
+}
+
+void checkPasswordInput(nanodbc::connection conn, std::string& checkString) {
+	// check long of characters
+	if (checkString.length() < 8)
+	{
+		errorMassage("Password", "need to be 8 character long");
+		std::cin >> checkString;
+		checkPasswordInput(conn, checkString);
+	}
+
+	// Make statement checkPassword
+	nanodbc::statement checkPassword(conn);
+	// Make query to find password is already exist
+	nanodbc::prepare(checkPassword, R"(
+		SELECT Id, IsDeleted
+		FROM Users
+		WHERE Password = ?
+	)");
+	// Encrypting passwor with sha256
+	nanodbc::string nPW = sha256(checkString);
+	// Binding password
+	checkPassword.bind(0, nPW.c_str());
+	auto result = nanodbc::execute(checkPassword);
+	if (result.next())
+	{
+		int dbIsDeleted = result.get<int>(1);
+		// Check is deleted
+		if (dbIsDeleted == 0)
+		{
+			errorMassage("Password", "already exist in database");
+			std::cin >> checkString;
+			checkPasswordInput(conn, checkString);
+		}
+		std::cout << "\n";
+	}
+
+}
+
+void errorMassage(std::string name, std::string problem) {
+	std::cout << "\n ERROR: " + name + " is " + problem + " \n";
+	std::cout << " Try again: ";
 }

@@ -190,6 +190,7 @@ void editTeamTitle(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLog
 	case 'Y':{
 		std::cout << "\n\nChoose new title: ";
 		std::cin >> newTitle;
+		checkTitleInput(conn, newTitle);
 		
 		// Make statement changeOldTitle
 		nanodbc::statement changeOldTitle(conn);
@@ -637,7 +638,7 @@ void createTeam(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginU
 	std::string title;
 	std::cout << "Title of team: ";
 	std::cin >> title;
-
+	checkTitleInput(conn, title);
 	// Make statement createNewTeam
 	nanodbc::statement createNewTeam(conn);
 	// Make query to add team in db
@@ -904,5 +905,32 @@ void deleteTeam(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginU
 	}
 	default:
 		break;
+	}
+}
+
+void checkTitleInput(nanodbc::connection conn, std::string& checkString) {
+	// Make statement checkTitle
+	nanodbc::statement checkTitle(conn);
+	// Make query to find title is already exist
+	nanodbc::prepare(checkTitle, R"(
+		SELECT Id, IsDeleted
+		FROM Teams
+		WHERE Title = ?
+	)");
+	// Bind title
+	checkTitle.bind(0, checkString.c_str());
+
+	auto result = nanodbc::execute(checkTitle);
+	if (result.next())
+	{
+		int dbIsDeleted = result.get<int>(1);
+		// Check is delete
+		if (dbIsDeleted == 0)
+		{
+			errorMassage("Team", "already exist in database");
+			std::cin >> checkString;
+			checkUserNameInput(conn, checkString);
+		}
+		std::cout << "\n";
 	}
 }
