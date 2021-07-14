@@ -30,5 +30,9 @@
 > &nbsp; -> Click [here](https://codingburgas-my.sharepoint.com/:u:/g/personal/bbkanev18_codingburgas_bg/EVVXAHaicUxKuNJsVt5eaH8BUomde0-kiMpJDuMx5j36vw?e=4yunpx) to donwload .zip file <br>
 > <br>
 > &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; ⚠️ Important ⚠️ <br>
->  When you extracting zip file need to be one folder above my clone repository
+>  When you extracting zip file need to be one folder above my clone repository<br>
+<br>
+
+
+# <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Microsoft_Word_2013-2019_logo.svg/782px-Microsoft_Word_2013-2019_logo.svg.png" alt="Word" width="50"/> [Documentation](https://codingburgas-my.sharepoint.com/:w:/g/personal/bbkanev18_codingburgas_bg/ERMc1n0JsHVErGOqI31w9psByE_66CJ8CQqFbLd0BZ8pxA?e=jYv3dr)
 
