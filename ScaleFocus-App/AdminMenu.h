@@ -9,23 +9,23 @@
 #include "ProjectMenu.h"
 #include "sha256.h"
 
-// Main Admin menu contain:
+// Main Admin menu options:
 // -> User Management
 // -> Team Management
 // -> Projects and Task Management
-// -> Work log
+// -> Work log (in progess)
 void adminMenu(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser);
 
-// User management menu contain:
+// User management menu options:
 // -> Print user
 // -> Create user
 // -> Edit user
 // -> Delete user
 void subAdminUserMenu(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser);
 
-// Print menu contain:
-// -> print all users
-// -> print user by id
+// Print menu options:
+// -> Print all users
+// -> Print user by id
 void subMenuListUser(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser);
 
 // Print all user
@@ -37,14 +37,14 @@ int printUser(nanodbc::connection conn, nanodbc::result& result);
 // Create user
 void createUser(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser);
 
-// Edit menu contain:
+// Edit menu options:
 // -> Chenge username
 // -> Chenge password
 // -> Chenge firstname
 // -> Chenge lastname
 void subEditMenu(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser);
 
-// Delete menu contain:
+// Delete menu options:
 // -> Delete user by id
 // -> Delete all user (delete all user in db and back default admin)
 void subDeleteMenu(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser);

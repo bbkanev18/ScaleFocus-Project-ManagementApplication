@@ -179,7 +179,6 @@ void deleteOneUser(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLog
 		system("pause");
 		return;
 	}
-	
 	// If function return -2 is mean you enter character in integer
 	else if (id == -2)
 	{
@@ -234,7 +233,7 @@ void deleteOneUser(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLog
 		system("pause");
 		break;
 	}
-	// n -> no
+	// n -> No
 	case 'n':
 	case 'N':
 		subDeleteMenu(conn, idOfLoginUser, RoleOfLoginUser);
@@ -582,7 +581,7 @@ void editLastName(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLogi
 	// Use _getch to get user choise
 	switch (_getch())
 	{
-	// y -> yes
+	// y -> Yes
 	case 'y':
 	case 'Y':
 	{
@@ -642,7 +641,7 @@ int getUserById(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginU
 	// If you enter letter in integer
 	if (std::cin.fail())
 	{
-		// clear all error flags
+		// clear all error flags from visual studio
 		std::cin.clear();
 		// ignore INT_MAX symbols when you press enter
 		std::cin.ignore(INT_MAX, '\n');

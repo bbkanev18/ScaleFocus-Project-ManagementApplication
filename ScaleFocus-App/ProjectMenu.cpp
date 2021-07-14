@@ -1,11 +1,13 @@
 #include "ProjectMenu.h"
 
 void subProjectMenu(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser) {
+	// Breake while and back to admin menu
 	bool isTrue = true;
 	while (isTrue)
 	{
 		system("cls");
 		std::cout << "---Project and Task Menu---\n1. Print project\n2. Create new project\n3. Edit project\n4. Delete project\nEsc. To back in main menu\n";
+		// Use _getch to get user choise
 		switch (_getch())
 		{
 		case '1':
@@ -40,11 +42,13 @@ void subProjectMenu(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLo
 }
 
 void subPrintProjectMenu(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser) {
+	// Breake while and back to project and task menu
 	bool isTrue = true;
 	while (isTrue)
 	{
 		system("cls");
 		std::cout << "---Print Menu---\n1. Print all project\n2. Print project by id\nEsc. To back in project and task menu\n";
+		// Use _getch to get user choise
 		switch (_getch())
 		{
 		case '1':
@@ -67,8 +71,9 @@ void subPrintProjectMenu(nanodbc::connection conn, int& idOfLoginUser, bool& Rol
 }
 
 void printAllProject(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfLoginUser) {
+	// Make new statement getAllProject
 	nanodbc::statement getAllProject(conn);
-
+	// Make query to db to select information for project
 	nanodbc::prepare(getAllProject, R"(
 		SELECT 
 			Id,
@@ -82,8 +87,9 @@ void printAllProject(nanodbc::connection conn, int& idOfLoginUser, bool& RoleOfL
 			IsDeleted
 		FROM Projects
 	)");
-
+	// Execute query
 	auto result = nanodbc::execute(getAllProject);
+	// Read row and print
 	while (result.next())
 	{
 		printOneProject(conn, result);
@@ -102,7 +108,8 @@ void printOneProject(nanodbc::connection conn, nanodbc::result& result) {
 	auto dbIdOfUserLastChange = result.get<int>(6);
 	auto dbIdTeam = result.get<int>(7);
 	auto dbIsDeleted = result.get<int>(8);
-
+	
+	// Check is project is delete
 	if (dbIsDeleted == 0)
 	{
 		std::cout << "\n======================================\n";

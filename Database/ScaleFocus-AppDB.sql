@@ -3,10 +3,6 @@ GO
 /****** Object:  Database [ScaleFocus-AppDB]    Script Date: 7/12/2021 2:46:56 PM ******/
 CREATE DATABASE [ScaleFocus-AppDB]
  CONTAINMENT = NONE
- ON  PRIMARY 
-( NAME = N'ScaleFocus-AppDB', FILENAME = N'C:\Users\Biser\ScaleFocus-AppDB.mdf' , SIZE = 8192KB , MAXSIZE = UNLIMITED, FILEGROWTH = 65536KB )
- LOG ON 
-( NAME = N'ScaleFocus-AppDB_log', FILENAME = N'C:\Users\Biser\ScaleFocus-AppDB_log.ldf' , SIZE = 8192KB , MAXSIZE = 2048GB , FILEGROWTH = 65536KB )
 GO
 IF (1 = FULLTEXTSERVICEPROPERTY('IsFullTextInstalled'))
 begin
